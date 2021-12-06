@@ -1,6 +1,6 @@
 # svelte-lazy-router
 
-As there is curently no dedicated nor even suitable router for svelte, and needing a powerful and flexible one, we decided to make one and make it a dedicated package.
+As there is curently no dedicated nor even suitable router for svelte, and as we needed a powerful and flexible one, we decided to make one and make it a dedicated package.
 
 ## Installation / usage
 
@@ -10,10 +10,10 @@ npm i -S svelte-lazy-router
 
 ```typescript
 import { Router, Link, link } from "svelte-lazy-router";
-
-...
-
-myLink = link('thatRoute', {id: 42});
+----
+myLink = link('user', {id: 42});
+----
+myLink = link('user/42');  // Don't laugh - if we are in a nested router, this might become `/en/user/42` or `/de/user/42` depending of the parent router
 ```
 
 ```html
@@ -21,7 +21,9 @@ myLink = link('thatRoute', {id: 42});
 ----
 <Router {routes} />
 ----
-<Link route="thatRoute" parms={{id: 42}}>
+<Link route="user" parms={{id: 42}}>  <!-- named route -->
+----
+<Link route="user/42">  <!-- url path -->
 ```
 
 ## Structures
@@ -76,7 +78,7 @@ A router routes is defined with an array of `Route` : `<Router {routes}>` - Exce
   import B from "./b.svelte";
   import C from "./c.svelte";
   import D from "./d.svelte";
-  
+
   let routes = [{
     path: 'a',
     component: A,

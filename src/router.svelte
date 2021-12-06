@@ -41,7 +41,6 @@
 		const current = getRoute(path);
 		// TODOs:
 		// - lazy load
-		// - use route-props as component-props
 		component = current.component;
 		props = getProps(path, current.segments);
 	};
@@ -108,7 +107,7 @@
 	 */
 	function match(path: string, props?: Dictionary) {
 		// TODO: write it and call it in `navigate`, `replace` and `link` - btw, write `link`
-		// TODO: use context
+		// TODO: use context-> find the lowest common ancestor; replace props if specified in the dictionary
 	}
 	export function navigate(path: string, props?: Dictionary) {
 		window.history.pushState(null, null, path);
