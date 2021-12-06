@@ -9,7 +9,7 @@
 	 * - loading screen configuration (option for little loading bar under the title like youtube - forgot the name) 
 	 * - default 404 + configuration
 	 * - https://svelte.dev/tutorial/context-api : current-route should be a context
-	 * - vs-code does not find types from /@types
+	 * - vs-code does not find types from /@types (hence all the "errors" in this file)
 	 * - allow an `url` property to be specified, to override parent' sub-url or window.location if root (!important)
 	 */
 	import {onMount} from "svelte";
@@ -17,6 +17,7 @@
 	onMount(() => {
 		if(routes) {
 			specs = getRouteSegments(routes);
+			//TODO: if I am root (no route context) and have no specified URL, then I should register as the window.location manager
 			LoadRoute(location.pathname);
 		}
 	});
@@ -24,46 +25,6 @@
 	let namedRoutes: Dictionary<RouteSpec> = {};
 	let props = {};
 	let component;
-	function segmented(path: string): string[] {
-		return path
-			.replace(/^\/+|\/+$/g, '')
-			.split('/')
-			.filter(segment => segment);
-	}
-	async function lazy<T>(obj: Lazy<T>): Promise<T> {
-		while(obj instanceof Function || obj instanceof Promise)
-			// TODO: SvelteComponent IS a function - check if calling it does the job of implementing it or if we should be more precise than ` instanceof Function`
-			if(obj instanceof Function) obj = (<()=> Lazy<T>>obj)();
-			else obj = await <Promise<Lazy<T>>>obj;
-		return Promise.resolve(<T>obj);
-	}
-	function LoadRoute(path) {
-		const current = getRoute(path);
-		// TODOs:
-		// - lazy load
-		component = current.component;
-		props = getProps(path, current.segments);
-	};
-	function getRouteSegments(routes, parent?: RouteSpec): RouteSpec[] {
-		return routes.map(({name, path, component, nested}) => {
-			let rv: RouteSpec = {
-				name,
-				component,
-				parent,
-				segments: segmented(path)
-					.map(segment => ({
-						name: segment.replace(':', ''),
-						variable: segment.startsWith(':')
-					}))
-			};
-			if(name) namedRoutes[name] = rv;
-			if(nested) rv.nested = getRouteSegments(nested, rv);
-			return rv;
-		});
-	}
-	function getRoute(path: string): RouteMatch {
-		return getRouteSegments(segmented(path));
-	}
 	function getSubRoute(segments: Segment[], props: Dictionary = {}, parent: RouteMatch = null): RouteMatch {
 		let notFound = {},
 			rv = specs.reduce((found: RouteMatch, route: RouteSpec) => {
@@ -90,14 +51,48 @@
 		if(rv.props === notFound) throw new Error('route not found: '+ segments.join('/'));
 		return rv;
 	}
-	function getProps(path, routeSegments) {
-		let props = {};
-		segmented(path).map((s, i) =>
-			routeSegments[i].variable &&
-			(props[routeSegments[i].name] = s)
-		);
-		return props;
+</script>
+<script type="ts" context="module">
+	function segmented(path: string): string[] {
+		return path
+			.replace(/^\/+|\/+$/g, '')
+			.split('/')
+			.filter(segment => segment);
+	}
+	async function lazy<T>(obj: Lazy<T>): Promise<T> {
+		while(obj instanceof Function || obj instanceof Promise)
+			// TODO: SvelteComponent IS a function - check if calling it does the job of implementing it or if we should be more precise than ` instanceof Function`
+			if(obj instanceof Function) obj = (<()=> Lazy<T>>obj)();
+			else obj = await <Promise<Lazy<T>>>obj;
+		return Promise.resolve(<T>obj);
+	}
+	function LoadRoute(path) {
+		const current = getRoute(path);
+		// TODOs:
+		// - lazy load
+		component = current.component;
+		props = current.props;
 	};
+	function getRouteSegments(routes, parent?: RouteSpec): RouteSpec[] {
+		return routes.map(({name, path, component, nested}) => {
+			let rv: RouteSpec = {
+				name,
+				component,
+				parent,
+				segments: segmented(path)
+					.map(segment => ({
+						name: segment.replace(':', ''),
+						variable: segment.startsWith(':')
+					}))
+			};
+			if(name) namedRoutes[name] = rv;
+			if(nested) rv.nested = getRouteSegments(nested, rv);
+			return rv;
+		});
+	}
+	function getRoute(path: string): RouteMatch {
+		return getRouteSegments(segmented(path));
+	}
 	/**
 	 * Find a route along 2 scenarii
 	 * - a complete path and no props
@@ -106,7 +101,7 @@
 	 * @param props Dictionary properties of the route as only a name is provided
 	 */
 	function match(path: string, props?: Dictionary) {
-		// TODO: write it and call it in `navigate`, `replace` and `link` - btw, write `link`
+		// TODO: write it and call it in `navigate`, `replace` and `link`
 		// TODO: use context-> find the lowest common ancestor; replace props if specified in the dictionary
 	}
 	export function navigate(path: string, props?: Dictionary) {
@@ -116,6 +111,9 @@
 	export function replace(path: string, props?: Dictionary) {
 		window.history.replaceState(null, null, path);
 		LoadRoute(path);
+	};
+	export function link(path: string, props?: Dictionary): string {
+		return null;	//TODO
 	};
 	export function go(delta: number) {
 		window.history.go(delta);
