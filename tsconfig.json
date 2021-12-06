@@ -1,0 +1,28 @@
+{
+	"extends": "@tsconfig/svelte/tsconfig.json",
+	"compilerOptions": {
+		"rootDir": ".",
+		"outDir": "./dst/",
+		"baseUrl": "./src/",
+		"sourceMap": true,
+		"inlineSources": false,
+		"noImplicitAny": false,
+		"module": "ESNext",
+		"moduleResolution": "node",
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"target": "es6",
+		"lib": [
+			"es5",
+			"es6",
+			"es2020",
+			"dom"
+		],
+		"allowSyntheticDefaultImports": true,
+		"resolveJsonModule": true,
+		"typeRoots": ["node_modules/@types", "@types"],
+		"types": ["node", "svelte"]
+	},
+	"include": ["src/**/*", "@types/index.d.ts"],
+	"exclude": ["**/*.spec.ts"]
+}

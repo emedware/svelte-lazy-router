@@ -1,0 +1,37 @@
+{
+  "name": "svelte-lazy-router",
+  "version": "0.0.0",
+  "description": "Router with lazy-loading and nested routes for svelte",
+  "module": "dst/router-esm.js",
+  "types": "@types/router.d.ts",
+  "scripts": {
+    "prepack": "rollup -c"
+  },
+  "directories": {
+	"example": "test",
+	"lib": "src",
+	"bin": "dst"
+  },
+  "keywords": [
+    "svelte",
+    "router",
+    "lazy",
+    "nested"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-node-resolve": "^13.0.6",
+    "rollup": "^2.60.2",
+    "rollup-plugin-auto-external": "^2.0.0",
+    "rollup-plugin-svelte": "^7.1.0",
+    "rollup-plugin-typescript2": "^0.31.1",
+    "svelte": "^3.44.2",
+    "svelte-preprocess": "^4.9.8",
+    "typescript": "^4.5.2"
+  },
+  "devDependencies": {
+    "@tsconfig/svelte": "^2.0.1"
+  }
+}
