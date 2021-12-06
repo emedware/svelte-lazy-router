@@ -10,6 +10,7 @@
 	 * - default 404 + configuration
 	 * - https://svelte.dev/tutorial/context-api : current-route should be a context
 	 * - vs-code does not find types from /@types
+	 * - allow an `url` property to be specified, to override parent' sub-url or window.location if root (!important)
 	 */
 	import {onMount} from "svelte";
 	export let routes: Route? = null;

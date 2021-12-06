@@ -62,3 +62,61 @@ interface RouteMatch {
 - `spec` gives all the indication of the generic route (without match)
 - `parent` and `nested` give both the match of the parent and nested route (if any)
 - `props` contains all the parameters given to the route. The prototype of this object are the parameters given to the parent route (chained)
+
+## Nesting
+
+A router routes is defined with an array of `Route` : `<Router {routes}>` - Except when it is a nested router. Nesting can be done in two ways, illustrated here : available routes are `a/c`, `a/d`, `b/c`, `b/d`.
+
+`index.svelte`
+
+```html
+<script>
+  import { Router } from "svelte-lazy-router";
+  import A from "./a.svelte";
+  import B from "./b.svelte";
+  import C from "./c.svelte";
+  import D from "./d.svelte";
+  
+  let routes = [{
+    path: 'a',
+    component: A,
+    nested: [{
+      path: 'c', component: C
+    }, {
+      path: 'd', component: D
+    }]
+  }, {
+    path: 'b',
+    component: B
+  }]
+</script>
+<Router {routes}>
+```
+
+There are two ways to define routes - if both are used, the routes are cumulated
+
+`a.svelte`
+
+```html
+<script>
+  import { Router } from "svelte-lazy-router";
+</script>
+a/ ... <Router>
+```
+
+`b.svelte`
+
+```html
+<script>
+  import { Router } from "svelte-lazy-router";
+  import C from "./c.svelte";
+  import D from "./d.svelte";
+
+  let routes = [{
+    path: 'c', component: C
+  }, {
+    path: 'd', component: D
+  }]
+</script>
+b/ ... <Router {routes}>
+```
