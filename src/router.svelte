@@ -11,6 +11,7 @@
 	 * - https://svelte.dev/tutorial/context-api : current-route should be a context
 	 * - vs-code does not find types from /@types (hence all the "errors" in this file)
 	 * - allow an `url` property to be specified, to override parent' sub-url or window.location if root (!important)
+	 * - path i18n: "/login"|en, "/connexion"|fr, "/autentificare"|ro, ...
 	 */
 	import {onMount} from "svelte";
 	export let routes: Route? = null;
