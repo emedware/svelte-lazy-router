@@ -67,6 +67,16 @@ By default, `H5History` is used.
 
 The slot is displayed if no route is found. The `error` value can be used to display more information.
 
+#### Properties
+
+A route can be forced (and hence the router state ignored) if this is specified :
+
+`route`
+: Either the path (begins with a '/') or the name of the route to point to
+
+`params`
+: If a route name is provided, this is the dictionary of the properties to give.
+
 #### Events
 
 `loading`

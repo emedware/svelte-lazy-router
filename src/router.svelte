@@ -28,7 +28,10 @@
 						variable: segment.startsWith(':')
 					}))
 			};
-			if(name) namedRoutes[name] = rv;
+			if(name) {
+				console.assert(!namedRoutes[name], `Route name ${name} only used once.`)
+				namedRoutes[name] = rv;
+			}
 			if(nested) rv.nested = analyzeRoutes(nested, rv);
 			return rv;
 		});
@@ -59,20 +62,25 @@ $:	try {
 	* @param path string: path/name of the route (name if props are specified, path if not)
 	* @param props Dictionary properties of the route as only a name is provided
 	*/
-	function match(path: string, props?: Dictionary, nested?: RouteMatch): RouteMatch {
-		if(!path || path.startsWith('/')) return getSubRoute(segmented(path));
-		const spec = namedRoutes[path], builtPath = [];
-		console.assert(spec, `Named route "${path}" defined`);
-		// TODO Call recursively for `parent`/`nested` if needed
-		return {
+	function match(path: string | RouteSpec, props?: Dictionary, nested?: RouteMatch): RouteMatch {
+		let spec: RouteSpec;
+		if('string'=== typeof path) {
+			if(!path || (<string>path).startsWith('/')) return getSubRoute(specs, segmented(path));
+			spec = namedRoutes[path];
+			console.assert(spec, `Named route "${path}" defined`);
+		} else spec = <RouteSpec>path;
+		const rv = {
 			spec,
 			parent: null,
-			nested: null,
+			nested,
 			props
-		}
+		};
+		if(spec.parent)
+			rv.parent = match(spec.parent, props, rv);
+		return rv;
 	}
 
-	function getSubRoute(segments: string[], props: Dictionary = {}, parent: RouteMatch = null): RouteMatch {
+	function getSubRoute(specs: RouteSpec[], segments: string[], props: Dictionary = {}, parent: RouteMatch = null): RouteMatch {
 		let notFound = {},
 			rv = specs.reduce((found: RouteMatch, route: RouteSpec) => {
 				if(route.segments.length > segments.length
@@ -89,23 +97,25 @@ $:	try {
 					props: rp
 				};
 				if(!route.nested) return rv;
-				let sub = getSubRoute(segments.slice(route.segments.length), rp, rv);
-				if(!sub) return found;
+				let sub = getSubRoute(route.nested, segments.slice(route.segments.length), rp, rv);
+				if(!sub) return rv;
 				rv.nested = sub;
 				return rv;
 			}, {spec:{segments: []}, props: notFound});
-		if(rv.props === notFound) throw new Error('route not found: /'+ segments.join('/'));
-		return rv;
+		return rv.props === notFound ? null : rv;
 	}
 
 	function link(path: string | RouteMatch, props?: Dictionary): string {
 		let route = typeof path === 'string' ? match(<string>path, props) : <RouteMatch>path,
 			builtPath: string[] = [];
-		for(let segment of route.spec.segments)
-			if(segment.variable) {
-				console.assert(route.props && typeof route.props[segment.name] !== 'undefined', `Route'property ${segment.name} specified`);
-				builtPath.push(encodeURIComponent(route.props[segment.name]));
-			} else builtPath.push(segment.name);
+		while(route.parent) route = route.parent;	//Take root route
+		do {
+			for(let segment of route.spec.segments)
+				if(segment.variable) {
+					console.assert(route.props && typeof route.props[segment.name] !== 'undefined', `Route'property ${segment.name} specified`);
+					builtPath.push(encodeURIComponent(route.props[segment.name]));
+				} else builtPath.push(segment.name);
+		} while(route = route.nested);
 		return $history.path(builtPath)
 	};
 	function navigate(path: string, props?: Dictionary, push: boolean = true) {
