@@ -42,11 +42,12 @@ declare global {
 	interface Routing {
 		link(path: string | RouteMatch, props?: Dictionary): string;
 		match(path: string, props?: Dictionary, nested?: RouteMatch): RouteMatch;
-		route: RouteMatch;
-		get path(): string;
 		navigate(path: string, props?: Dictionary, push: boolean = true);
 		replace(path: string, props?: Dictionary);
 		go(delta: number);
+		route: RouteMatch;
+		get path(): string;
+		error?: any;
 	}
 
 	interface RouteHistory extends EventEmitter {

@@ -2,6 +2,7 @@
 	<nav>
 		<Link route="one">r1</Link>
 		<Link route="two">r2</Link>
+		<Link route="prmd" params={{id: 42}}>p42</Link>
 	</nav>
 	<div>
 		You are here --&gt; <Route>404</Route> &lt;--

@@ -36,7 +36,13 @@ import { Writable, writable } from "svelte/store";
 
 	let specs: RouteSpec[];
 	function setRoute() {
-		$state.route = match(history.value);
+		try {
+			$state.route = match(history.value);
+			delete $state.error;
+		} catch(x) {
+			$state.route = null;
+			$state.error = x;
+		}
 	}
 $:	{
 		specs = analyzeRoutes(routes);
@@ -103,8 +109,8 @@ $:	{
 			builtPath: string[] = [];
 		for(let segment of route.spec.segments)
 			if(segment.variable) {
-				console.assert(props && typeof props[segment.name] !== 'undefined', `Route'property ${segment.name} specified`);
-				builtPath.push(encodeURIComponent(props[segment.name]));
+				console.assert(route.props && typeof route.props[segment.name] !== 'undefined', `Route'property ${segment.name} specified`);
+				builtPath.push(encodeURIComponent(route.props[segment.name]));
 			} else builtPath.push(segment.name);
 		return history.path(builtPath)
 	};
@@ -120,6 +126,6 @@ $:	{
 	};
 	function go(delta: number) {
 		window.history.go(delta);
-		$state.route = match(history.value);
+		setRoute();
 	};
 </script>

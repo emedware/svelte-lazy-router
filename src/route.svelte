@@ -39,9 +39,13 @@ $:	LoadRoute($router.route);
 		return Promise.resolve(<T>obj);
 	}
 	function LoadRoute(match: RouteMatch) {
-		// TODOs:
-		// - lazy load
-		component = match.spec.component;
-		props = match.props;
+		if(!match)
+			component = null;
+		else {
+			// TODOs:
+			// - lazy load
+			component = match.spec.component;
+			props = match.props;
+		}
 	};
 </script>
