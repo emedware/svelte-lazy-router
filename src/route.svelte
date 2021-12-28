@@ -34,12 +34,13 @@ $:	if($router) {
 			component = null;
 		else {
 			dispatch('loading', true);
+			props = match.props;
 			try {
-				component = await lazy<SvelteComponent>(match.spec.component, SvelteComponent);
+				do component = await lazy<SvelteComponent>(match.spec.component, SvelteComponent);
+				while(!component && (match = match.nested));
 			} finally {
 				dispatch('loading', false);
 			}
-			props = match.props;
 		}
 	};
 </script>

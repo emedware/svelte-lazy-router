@@ -85,6 +85,7 @@ $:	try {
 			rv = specs.reduce((found: RouteMatch, route: RouteSpec) => {
 				if(route.segments.length > segments.length
 					|| (route.segments.length < segments.length && !route.nested)
+				// Policy: we take the longest match
 					|| route.segments.length < found.spec.segments.length)
 					return found;
 				let rp = Object.create(props);

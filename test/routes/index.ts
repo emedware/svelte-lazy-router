@@ -19,7 +19,7 @@ export {nested};
 export default [{
 	name: 'one',
 	path: '1',
-	component: C1,
+	//component: C1,
 	nested
 }, {
 	name: 'two',
