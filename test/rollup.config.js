@@ -9,8 +9,9 @@ const production = !process.env.ROLLUP_WATCH;
 
 export default {
 	input: 'test/index.ts',
+	preserveEntrySignatures: false,
 	output: {
-		file: 'demo/index.js',
+		dir: 'demo',
 		format: 'esm',
 		sourcemap: true
 	},

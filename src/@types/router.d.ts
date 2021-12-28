@@ -2,10 +2,6 @@ import { SvelteComponent } from "svelte";
 import EventEmitter from "events";
 
 declare global {
-	type Dictionary<T = any> = {[key: string]: T};
-
-	type Lazy<T> = typeof T | (()=> Lazy<T>) | Promise<Lazy<T>>;
-
 	/**
 	 * Routes as specified by the user
 	 */

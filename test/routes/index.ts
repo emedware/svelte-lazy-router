@@ -16,6 +16,10 @@ export default [{
 	path: '/prmd/:id',
 	component: Prmd
 }, {
+	name: 'lzOne',
+	path: '/lz1/:id',
+	component: async ()=> (await import("./lazy1.svelte")).default
+}, {
 	name: 'landing',
 	path: '/',
 	component: Landing
