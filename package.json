@@ -3,14 +3,19 @@
   "version": "0.0.0",
   "description": "Router with lazy-loading and nested routes for svelte",
   "module": "dst/router-esm.js",
-  "types": "@types/router.d.ts",
+  "types": "dst/index.d.ts",
   "scripts": {
-    "prepack": "rollup -c"
+    "start": "rollup -c src/rollup.config.js -w",
+    "test": "concurrently --kill-others --names tsc,web-dev-server \"npm run test:watch\" \"npm run test:serve\"",
+    "prepack": "rollup -c src/rollup.config.js",
+    "test:watch": "rollup -c test/rollup.config.js -w",
+    "test:serve": "web-dev-server --config test/web-dev-server.config.js",
+    "test:build": "rollup -c test/rollup.config.js"
   },
   "directories": {
-	"example": "test",
-	"lib": "src",
-	"bin": "dst"
+    "example": "test",
+    "lib": "src",
+    "bin": "dst"
   },
   "keywords": [
     "svelte",
@@ -26,12 +31,16 @@
     "rollup": "^2.60.2",
     "rollup-plugin-auto-external": "^2.0.0",
     "rollup-plugin-svelte": "^7.1.0",
-    "rollup-plugin-typescript2": "^0.31.1",
-    "svelte": "^3.44.2",
+    "svelte": "^3.44.3",
+    "svelte-dts": "^0.3.6",
     "svelte-preprocess": "^4.9.8",
     "typescript": "^4.5.2"
   },
   "devDependencies": {
-    "@tsconfig/svelte": "^2.0.1"
+    "@tsconfig/svelte": "^2.0.1",
+    "@web/dev-server": "^0.1.28",
+    "concurrently": "^6.5.1",
+    "rollup-plugin-copy": "^3.4.0",
+    "rollup-plugin-ts": "^2.0.4"
   }
 }

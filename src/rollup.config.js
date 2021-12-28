@@ -1,9 +1,10 @@
-import typescript from 'rollup-plugin-typescript2';
+import typescript from 'rollup-plugin-ts';
 import svelte from 'rollup-plugin-svelte';
 import preprocess from 'svelte-preprocess';
 import commonjs from '@rollup/plugin-commonjs';
 import autoExternal from 'rollup-plugin-auto-external';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+//import svelteDts from "svelte-dts";
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -18,6 +19,7 @@ export default {
 		include: ['src/**']
 	},
 	plugins: [
+		//svelteDts({}),
 		autoExternal(),
 		typescript({
 			allowNonTsExtensions: true

@@ -6,60 +6,30 @@
 <script type="ts">
 	/**
 	 * TODOs: 
-	 * - loading screen configuration (option for little loading bar under the title like youtube - forgot the name) 
-	 * - default 404 + configuration
+	 * - loading screen configuration (option for little loading bar under the title like youtube - forgot the name) + 404 = slot ?
 	 * - https://svelte.dev/tutorial/context-api : current-route should be a context
-	 * - vs-code does not find types from /@types (hence all the "errors" in this file)
 	 * - allow an `url` property to be specified, to override parent' sub-url or window.location if root (!important)
 	 * - path i18n: "/login"|en, "/connexion"|fr, "/autentificare"|ro, ...
+	 * - multi-parts routes : menu, center, toolbox, ....
 	 */
-	import {onMount} from "svelte";
-	export let routes: Route? = null;
+	import { createEventDispatcher, onDestroy, onMount, getContext, setContext } from "svelte";
+	//import type { Lazy, RouteMatch, RouteSpec, Dictionary, Segment } from "./@types/router";
+	import { match, rootLoaders } from "./routing";
+	export let route: RouteMatch | string = null;
+	const parent = getContext('router');
 	onMount(() => {
-		if(routes) {
-			specs = getRouteSegments(routes);
-			//TODO: if I am root (no route context) and have no specified URL, then I should register as the window.location manager
-			LoadRoute(location.pathname);
-		}
+		if(route)
+			LoadRoute(typeof route === 'string' ? match(route) : route);
+		else if(!parent) {
+			LoadRoute(match(location.pathname));
+			rootLoaders.add(LoadRoute);
+		} // TODO else
 	});
-	let specs: RouteSpec[] = [];
-	let namedRoutes: Dictionary<RouteSpec> = {};
+	onDestroy(()=> {
+		if(!route && !parent) rootLoaders.delete(LoadRoute);
+	});
 	let props = {};
 	let component;
-	function getSubRoute(segments: Segment[], props: Dictionary = {}, parent: RouteMatch = null): RouteMatch {
-		let notFound = {},
-			rv = specs.reduce((found: RouteMatch, route: RouteSpec) => {
-				if(route.segments.length > segments.length
-					|| (route.segments.length < segments.length && !route.nested)
-					|| route.segments.length < found.spec.segments.length)
-					return found;
-				let rp = Object.create(props);
-				if(!route.segments.every((s, i) =>
-					segments[i].variable ? (rp[segments[i].name] = s, true) : segments[i].name === s
-				)) return found;
-				let rv: RouteMatch = {
-					spec: route,
-					parent,
-					props: rp
-				};
-				if(!route.nested) return rv;
-				// TODO: nested should not be loaded here -> lazy loading
-				let sub = getSubRoute(segments.slice(routes.segments.length), rp, rv);
-				if(!sub) return found;
-				rv.nested = sub;
-				return rv;
-			}, {spec:{segments: []}, props: notFound});
-		if(rv.props === notFound) throw new Error('route not found: '+ segments.join('/'));
-		return rv;
-	}
-</script>
-<script type="ts" context="module">
-	function segmented(path: string): string[] {
-		return path
-			.replace(/^\/+|\/+$/g, '')
-			.split('/')
-			.filter(segment => segment);
-	}
 	async function lazy<T>(obj: Lazy<T>): Promise<T> {
 		while(obj instanceof Function || obj instanceof Promise)
 			// TODO: SvelteComponent IS a function - check if calling it does the job of implementing it or if we should be more precise than ` instanceof Function`
@@ -67,58 +37,15 @@
 			else obj = await <Promise<Lazy<T>>>obj;
 		return Promise.resolve(<T>obj);
 	}
-	function LoadRoute(path) {
-		const current = getRoute(path);
+	function LoadRoute(match: RouteMatch) {
 		// TODOs:
 		// - lazy load
-		component = current.component;
-		props = current.props;
+		component = match.spec.component;
+		props = match.props;
 	};
-	function getRouteSegments(routes, parent?: RouteSpec): RouteSpec[] {
-		return routes.map(({name, path, component, nested}) => {
-			let rv: RouteSpec = {
-				name,
-				component,
-				parent,
-				segments: segmented(path)
-					.map(segment => ({
-						name: segment.replace(':', ''),
-						variable: segment.startsWith(':')
-					}))
-			};
-			if(name) namedRoutes[name] = rv;
-			if(nested) rv.nested = getRouteSegments(nested, rv);
-			return rv;
-		});
+	setContext('router', this);
+	let subRouting = {
+		route: null,
+		routeChange: createEventDispatcher()
 	}
-	function getRoute(path: string): RouteMatch {
-		return getRouteSegments(segmented(path));
-	}
-	/**
-	 * Find a route along 2 scenarii
-	 * - a complete path and no props
-	 * - a route name and props
-	 * @param path string: path/name of the route (name if props are specified, path if not)
-	 * @param props Dictionary properties of the route as only a name is provided
-	 */
-	function match(path: string, props?: Dictionary) {
-		// TODO: write it and call it in `navigate`, `replace` and `link`
-		// TODO: use context-> find the lowest common ancestor; replace props if specified in the dictionary
-	}
-	export function navigate(path: string, props?: Dictionary) {
-		window.history.pushState(null, null, path);
-		LoadRoute(path);
-	};
-	export function replace(path: string, props?: Dictionary) {
-		window.history.replaceState(null, null, path);
-		LoadRoute(path);
-	};
-	export function link(path: string, props?: Dictionary): string {
-		return null;	//TODO
-	};
-	export function go(delta: number) {
-		window.history.go(delta);
-		setTimeout(()=> LoadRoute(location.pathname));
-	};
-	window.onpopstate = () => LoadRoute(location.pathname);
 </script>
