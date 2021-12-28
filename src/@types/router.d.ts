@@ -1,4 +1,5 @@
 import { SvelteComponent } from "svelte";
+import EventEmitter from "events";
 
 declare global {
 	type Dictionary<T = any> = {[key: string]: T};
@@ -36,5 +37,20 @@ declare global {
 		parent?: RouteMatch;
 		nested?: RouteMatch;
 		props: Dictionary<any>;
+	}
+
+	interface Routing {
+		link(path: string | RouteMatch, props?: Dictionary): string;
+		match(path: string, props?: Dictionary, nested?: RouteMatch): RouteMatch;
+		route: RouteMatch;
+		get path(): string;
+		navigate(path: string, props?: Dictionary, push: boolean = true);
+		replace(path: string, props?: Dictionary);
+		go(delta: number);
+	}
+
+	interface RouteHistory extends EventEmitter {
+		path(segments: string[]): string;
+		get value(): string;
 	}
 }

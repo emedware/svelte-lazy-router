@@ -21,7 +21,7 @@ myLink = link('user/42');  // Don't laugh - if we are in a nested router, this m
 ----
 <Router {routes} />
 ----
-<Link route="user" parms={{id: 42}}>  <!-- named route -->
+<Link route="user" parms={id: 42}>  <!-- named route -->
 ----
 <Link route="user/42">  <!-- url path -->
 ```

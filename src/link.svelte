@@ -1,16 +1,15 @@
 <script lang="ts">
-	import { link, navigate } from "./routing";
-	//import type { Dictionary } from "./@types/router";
-
+	import { getContext } from "svelte";
+	import type { Writable } from "svelte/store";
 	export let route: string;
 	export let parms: Dictionary = null;
 	let className = null;
 	export { className as class }
-	
+	const router = <Writable<Routing>>getContext('router');
 	let href;
-$:	href = link(route, parms);
+$:	href = $router.link(route, parms);
 	function follow(e) {
-		navigate(href);
+		$router.navigate(href);
 		e.preventDefault();
 	}
 </script>
