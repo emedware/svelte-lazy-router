@@ -1,15 +1,18 @@
-import EventEmitter from "events";
+import { readable } from "svelte/store";
 
-class H5History extends EventEmitter implements RouteHistory {
+let globalSet: (value: RouteHistory)=> void = null;
+
+function history(): RouteHistory { return {
+	update() { globalSet(history()); },
 	path(segments: string[]): string {
 		return '/' + segments.join('/') + location.hash;
-	}
-	get value() { return location.pathname; }
-}
-const h5History: RouteHistory = new H5History();
-export default h5History;
-
-window.onpopstate = (e)=> {
-	h5History.emit('change');
-	e.preventDefault();
-};
+	},
+	value: location.pathname
+}; }
+export default readable(history(), set=> {
+	globalSet = set;
+	window.onpopstate = (e)=> {
+		set(history());
+		e.preventDefault();
+	};
+});

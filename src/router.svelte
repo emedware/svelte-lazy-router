@@ -1,16 +1,16 @@
 <slot />
 <script lang="ts">
-	import { getContext, onDestroy, setContext } from "svelte";
-import { Writable, writable } from "svelte/store";
+	import { setContext } from "svelte";
+	import { Readable, Writable, writable } from "svelte/store";
 	import h5 from "./history/h5";
 	export var routes: Route[];
-	export var history: RouteHistory = h5;
-	let state: Writable<Routing> = writable({
-		link,
-		match,
+	export var history: Readable<RouteHistory> = h5;
+	let state = writable({
+		link, match,
 		navigate, replace, go,
-		get path() { return history.value; },
-		route: null
+		get path() { return $history.value; },
+		route: null,
+		error: null
 	});
 	setContext('router', state);
 	
@@ -35,21 +35,15 @@ import { Writable, writable } from "svelte/store";
 	}
 
 	let specs: RouteSpec[];
-	function setRoute() {
-		try {
-			$state.route = match(history.value);
-			delete $state.error;
-		} catch(x) {
-			$state.route = null;
-			$state.error = x;
-		}
+	
+$:	specs = analyzeRoutes(routes);
+$:	try {
+		$state.route = match($history.value);
+		delete $state.error;
+	} catch(x) {
+		$state.route = null;
+		$state.error = x;
 	}
-$:	{
-		specs = analyzeRoutes(routes);
-		setRoute();
-	}
-	history.on('change', setRoute);
-	onDestroy(()=> history.off('change', setRoute));
 
 	function segmented(path: string): string[] {
 		return path
@@ -66,7 +60,7 @@ $:	{
 	* @param props Dictionary properties of the route as only a name is provided
 	*/
 	function match(path: string, props?: Dictionary, nested?: RouteMatch): RouteMatch {
-		if(path.startsWith('/')) return getSubRoute(segmented(path));
+		if(!path || path.startsWith('/')) return getSubRoute(segmented(path));
 		const spec = namedRoutes[path], builtPath = [];
 		console.assert(spec, `Named route "${path}" defined`);
 		// TODO Call recursively for `parent`/`nested` if needed
@@ -112,13 +106,13 @@ $:	{
 				console.assert(route.props && typeof route.props[segment.name] !== 'undefined', `Route'property ${segment.name} specified`);
 				builtPath.push(encodeURIComponent(route.props[segment.name]));
 			} else builtPath.push(segment.name);
-		return history.path(builtPath)
+		return $history.path(builtPath)
 	};
 	function navigate(path: string, props?: Dictionary, push: boolean = true) {
 		let route = match(path, props), toward = link(route);
-		if(history.value !== toward) {
+		if($history.value !== toward) {
 			window.history[push?'pushState':'replaceState'](null, null, toward);
-			$state.route = route;
+			$history.update();
 		}
 	};
 	function replace(path: string, props?: Dictionary) {
@@ -126,6 +120,6 @@ $:	{
 	};
 	function go(delta: number) {
 		window.history.go(delta);
-		setRoute();
+		$history.update();
 	};
 </script>

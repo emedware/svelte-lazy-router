@@ -1,11 +1,18 @@
-import EventEmitter from "events";
+import { readable } from "svelte/store";
 
-class HashHistory extends EventEmitter implements RouteHistory {
+let globalSet: (value: RouteHistory)=> void = null;
+
+function history(): RouteHistory { return {
+	update() { globalSet(history()); },
 	path(segments: string[]): string {
-		return location.origin + location.pathname + '#/' + segments.join('/');
-	}
-	get value() { return location.hash.substring(1); }
-}
-const hashHistory: RouteHistory = new HashHistory();
-export default hashHistory;
-window.onhashchange = ()=> hashHistory.emit('change');
+		return location.origin + location.pathname + '#' + segments.join('/');
+	},
+	value: '/' + location.hash.substring(1)
+}; }
+export default readable(history(), set=> {
+	globalSet = set;
+	window.onhashchange = (e)=> {
+		set(history());
+		e.preventDefault();
+	};
+});

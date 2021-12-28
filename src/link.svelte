@@ -1,16 +1,15 @@
 <script lang="ts">
 	import { getContext } from "svelte";
 	import type { Writable } from "svelte/store";
+	import { excludeProps } from "./utils";
 	export let route: string;
 	export let params: Dictionary = null;
-	let className = null;
-	export { className as class }
 	const router = <Writable<Routing>>getContext('router');
 	let href;
 $:	href = $router.link(route, params);
 	function follow(e) {
-		$router.navigate(href);
-		e.preventDefault();
+		$router.navigate(route, params);
 	}
 </script>
-<a {href} class={className} on:click={follow}><slot /></a>
+<a {...excludeProps($$props, 'route', 'params')}
+	{href} on:click|preventDefault={follow}><slot /></a>

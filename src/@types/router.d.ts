@@ -41,13 +41,14 @@ declare global {
 		navigate(path: string, props?: Dictionary, push: boolean = true);
 		replace(path: string, props?: Dictionary);
 		go(delta: number);
-		route: RouteMatch;
-		get path(): string;
-		error?: any;
+		readonly route: RouteMatch;
+		readonly path: string;
+		readonly error?: any;
 	}
 
-	interface RouteHistory extends EventEmitter {
+	interface RouteHistory {
+		update(): void;
 		path(segments: string[]): string;
-		get value(): string;
+		value: string;
 	}
 }

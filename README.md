@@ -10,23 +10,107 @@ npm i -S svelte-lazy-router
 
 ```typescript
 import { Router, Link, link } from "svelte-lazy-router";
+const router = <Writable<Routing>>getContext('router');
 ----
-myLink = link('user', {id: 42});
+$:    myLink = $router.link('user', {id: 42});
 ----
-myLink = link('user/42');  // Don't laugh - if we are in a nested router, this might become `/en/user/42` or `/de/user/42` depending of the parent router
+$:    myLink = $router.link('/user/42');  // Don't laugh - if we are in a nested router, this might become `/en/user/42` or `/de/user/42` depending of the parent router
 ```
 
 ```html
-<Router />
-----
-<Router {routes} />
-----
-<Link route="user" parms={id: 42}>  <!-- named route -->
-----
-<Link route="user/42">  <!-- url path -->
+<Router {routes} >
+    ...
+    <Link route="user" parms={{id: 42}}>  <!-- named route -->
+    ----
+    <Link route="/user/42">  <!-- url path -->
+    ...
+    <Route>404</Route>
+    ...
+</Router>
 ```
 
-## Structures
+### Main difference with common routers
+
+The `Router` object contains only the state of the routing. On the HTML generation level, it just forwards the content. All routing-related activity/elements (`Route`, `Link`, `getContext('router')`).
+
+The `Route` element effectively displays the selected route.
+
+## Elements
+
+### `Router`
+
+#### Properties
+
+`routes`
+: Gives the `Route[]` tree of routes to serve
+
+`history`
+: Choose a history mode. Two modes are defined by default.
+- `H5History` uses the Html5 history mode : `http://mysite/my/route/path`
+- `HashHistory` uses the hash as history mode : `http://mysite#/my/route/path`
+
+By default, `H5History` is used.
+
+```html
+<Router history={HashHistory} ...>
+...
+</Router>
+<script lang="ts">
+    import { HashHistory } from "svelte-lazy-router";
+    ...
+</script>
+```
+
+### `Route`
+
+#### Slot
+
+The slot is displayed if no route is found. The `error` value can be used to display more information.
+
+#### Events
+
+`loading`
+: Called with a boolean value to signal its loading state (true when waiting a lazy-load)
+
+`error`
+: Set (or unset if value is `undefined`) the route-related error. In error state, the slot
+
+### Link
+
+#### Properties
+
+`route`
+: Either the path (begins with a '/') or the name of the route to point to
+
+`params`
+: If a route name is provided, this is the dictionary of the properties to give.
+
+## Annex: Structures
+
+### Routing
+
+When in a router, the context `"router"` is the store containing these informations :
+
+```ts
+interface Routing {
+    link(path: string | RouteMatch, props?: Dictionary): string;
+    match(path: string, props?: Dictionary, nested?: RouteMatch): RouteMatch;
+    navigate(path: string, props?: Dictionary, push: boolean = true);
+    replace(path: string, props?: Dictionary);
+    go(delta: number);
+    readonly route: RouteMatch;
+    readonly path: string;
+    readonly error?: any;
+}
+```
+
+Example:
+
+```ts
+let router = (Readable<Routing>)getContext('router');
+
+$router.navigate('/new/url');
+```
 
 ### Lazy
 
@@ -40,7 +124,7 @@ interface Route {
   name?: string;
   path: string;
   component?: Lazy<SvelteComponent>;
-  nested?: Lazy<Route[]>
+  nested?: Route[]
 }
 ```
 
@@ -92,7 +176,7 @@ A router routes is defined with an array of `Route` : `<Router {routes}>` - Exce
     component: B
   }]
 </script>
-<Router {routes}>
+<Router {routes}><Route/></Router>
 ```
 
 There are two ways to define routes - if both are used, the routes are cumulated
@@ -103,7 +187,7 @@ There are two ways to define routes - if both are used, the routes are cumulated
 <script>
   import { Router } from "svelte-lazy-router";
 </script>
-a/ ... <Router>
+a/ ... <Route />
 ```
 
 `b.svelte`
@@ -120,5 +204,5 @@ a/ ... <Router>
     path: 'd', component: D
   }]
 </script>
-b/ ... <Router {routes}>
+b/ ... <Router {routes}><Route /></Router>
 ```
