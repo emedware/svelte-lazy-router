@@ -4,6 +4,7 @@ import preprocess from 'svelte-preprocess';
 import commonjs from '@rollup/plugin-commonjs';
 import autoExternal from 'rollup-plugin-auto-external';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+//import dts from "rollup-plugin-dts";
 //import svelteDts from "svelte-dts";
 
 const production = !process.env.ROLLUP_WATCH;
@@ -16,10 +17,11 @@ export default {
 		sourcemap: true
 	},
 	watch: !production && {
-		include: ['src/**']
+		include: ['src/**/*']
 	},
 	plugins: [
 		//svelteDts({}),
+		//dts(),
 		autoExternal(),
 		typescript({
 			allowNonTsExtensions: true

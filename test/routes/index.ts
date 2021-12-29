@@ -6,9 +6,9 @@ import Beta from "./beta.svelte";
 import Landing from "./landing.svelte";
 import Prmd from "./prmd.svelte";
 
-function enter(route: RouteMatch) { console.log('Enter ', route2string(route.spec)); }
+async function enter(route: RouteMatch) { console.log('Enter ', route2string(route.spec)); }
 function leave(route: RouteMatch) { console.log('Leave ', route2string(route.spec)); }
-function properties(props: Dictionary, route: RouteMatch) { console.log('Props ', route2string(route.spec), ' : ', JSON.stringify(props)); }
+async function properties(props: Dictionary, route: RouteMatch) { console.log('Props ', route2string(route.spec), ' : ', JSON.stringify(props)); }
 
 const nested = [{
 	enter, leave, properties,

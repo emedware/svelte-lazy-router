@@ -1,6 +1,10 @@
 # svelte-lazy-router
 
+[![npm](https://img.shields.io/npm/v/svelte-lazy-router.svg)](https://www.npmjs.com/package/svelte-lazy-router)
+
 As there is curently no dedicated nor even suitable router for svelte, and as we needed a powerful and flexible one, we decided to make one and make it a dedicated package.
+
+Just released [2021-12-29], it is still highly to be tested, corrected and receive suggestions/PRs - Beta mode.
 
 ## Installation / usage
 
@@ -207,4 +211,21 @@ A router routes is defined with an array of `Route` : `<Router {routes}>` - Exce
 a/ ... <Route />
 ```
 
-If route `a` does not define a component, the sub-component (`C` or `D`) will be directly used
+If route `a` does not define a component, the sub-component (`C` or `D`) will be directly used.
+
+## TODOs & participation
+
+Fixes:
+
+- generate a bundled .d.ts
+- test w/ SSR
+
+Functionalities:
+
+- lazy loading - add a default behaviour for "Loading..." ?
+- path i18n: "/login"|en, "/connexion"|fr, "/autentificare"|ro, ...
+- multi-parts routes : menu, center, toolbox, ....
+Management of "remaining route", either:
+- Plan lazy-loaded nested route
+- Exception when some part of the path is not used (perhaps optionally?)
+- Both

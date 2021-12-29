@@ -2,20 +2,22 @@
   "name": "svelte-lazy-router",
   "version": "0.0.0",
   "description": "Router with lazy-loading and nested routes for svelte",
+  "ts:main": "src/index.ts",
+  "main": "dst/router-esm.js",
   "module": "dst/router-esm.js",
-  "types": "dst/index.d.ts",
+  "typings": "dst/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "start": "rollup -c src/rollup.config.js -w",
     "test": "concurrently --kill-others --names web-dev-server \"npm run test:watch\" \"npm run test:serve\"",
     "prepack": "rollup -c src/rollup.config.js",
-    "test:watch": "rollup -c test/rollup.config.js -w",
+    "test:watch": "rimraf demo && rollup -c test/rollup.config.js -w",
     "test:serve": "web-dev-server --config test/web-dev-server.config.js",
-    "test:build": "rollup -c test/rollup.config.js"
+    "test:build": "rimraf demo && rollup -c test/rollup.config.js"
   },
   "directories": {
     "example": "test",
-    "lib": "src",
-    "bin": "dst"
+    "lib": "dst"
   },
   "keywords": [
     "svelte",
@@ -23,24 +25,34 @@
     "lazy",
     "nested"
   ],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/emedware/svelte-lazy-router"
+  },
+  "bugs": {
+    "url": "https://github.com/emedware/svelte-lazy-router/issues"
+  },
+  "homepage": "https://github.com/emedware/svelte-lazy-router",
+  "author": "E Med Ware",
   "license": "ISC",
   "dependencies": {
-    "@rollup/plugin-commonjs": "^21.0.1",
-    "@rollup/plugin-node-resolve": "^13.0.6",
-    "rollup": "^2.60.2",
-    "rollup-plugin-auto-external": "^2.0.0",
-    "rollup-plugin-svelte": "^7.1.0",
     "svelte": "^3.44.3",
     "svelte-dts": "^0.3.6",
     "svelte-preprocess": "^4.9.8",
     "typescript": "^4.5.2"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-node-resolve": "^13.0.6",
     "@tsconfig/svelte": "^2.0.1",
     "@web/dev-server": "^0.1.28",
     "concurrently": "^6.5.1",
+    "rimraf": "^2.7.1",
+    "rollup": "^2.60.2",
+    "rollup-plugin-auto-external": "^2.0.0",
     "rollup-plugin-copy": "^3.4.0",
+    "rollup-plugin-dts": "^4.1.0",
+    "rollup-plugin-svelte": "^7.1.0",
     "rollup-plugin-ts": "^2.0.4"
   }
 }

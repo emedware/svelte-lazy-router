@@ -4,6 +4,7 @@
 		"rootDir": "./",
 		"outDir": "./dst/",
 		"baseUrl": "./",
+		"declaration": true,
 		"inlineSources": false,
 		"noImplicitAny": false,
 		"module": "ESNext",
@@ -24,6 +25,6 @@
             "*" : ["src/@types/*", "*"]
         }
 	},
-	"include": ["./src"],
+	"include": ["./src/**/*"],
 	"exclude": ["**/*.spec.ts"]
 }
