@@ -6,7 +6,7 @@
   "types": "dst/index.d.ts",
   "scripts": {
     "start": "rollup -c src/rollup.config.js -w",
-    "test": "concurrently --kill-others --names tsc,web-dev-server \"npm run test:watch\" \"npm run test:serve\"",
+    "test": "concurrently --kill-others --names web-dev-server \"npm run test:watch\" \"npm run test:serve\"",
     "prepack": "rollup -c src/rollup.config.js",
     "test:watch": "rollup -c test/rollup.config.js -w",
     "test:serve": "web-dev-server --config test/web-dev-server.config.js",

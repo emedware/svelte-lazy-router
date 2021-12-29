@@ -2,9 +2,9 @@ import { readable } from "svelte/store";
 
 let globalSet: (value: RouteHistory)=> void = null;
 
+export function update() { if(globalSet) globalSet(history()); }
 function history(): RouteHistory { return {
-	update() { globalSet(history()); },
-	path(segments: string[]): string {
+	url(segments: string[]): string {
 		return location.origin + location.pathname + '#' + segments.join('/');
 	},
 	value: '/' + location.hash.substring(1)

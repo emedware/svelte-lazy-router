@@ -41,11 +41,15 @@ The `Route` element effectively displays the selected route.
 
 #### Properties
 
+`variableMarker`
+: `/^\:/`
+
 `routes`
 : Gives the `Route[]` tree of routes to serve
 
 `history`
 : Choose a history mode. Two modes are defined by default.
+
 - `H5History` uses the Html5 history mode : `http://mysite/my/route/path`
 - `HashHistory` uses the hash as history mode : `http://mysite#/my/route/path`
 
@@ -71,19 +75,15 @@ The slot is displayed if no route is found. The `error` value can be used to dis
 
 A route can be forced (and hence the router state ignored) if this is specified :
 
-`route`
+- `route`: `RouteMatch`
 : Either the path (begins with a '/') or the name of the route to point to
-
-`params`
+- `params`: `Dictionary<any>`
 : If a route name is provided, this is the dictionary of the properties to give.
 
-#### Events
-
-`loading`
-: Called with a boolean value to signal its loading state (true when waiting a lazy-load)
-
-`error`
-: Set (or unset if value is `undefined`) the route-related error. In error state, the slot
+- `loading`: `Writable<boolean>`
+: Set to true when waiting a lazy-load
+- `error`: `Readable<Error>`
+: Set (or unset if value is `undefined`) the route-related error. In error state, the slot is displayed. The slot is displayed without error when the route is not found.
 
 ### Link
 
@@ -95,37 +95,39 @@ A route can be forced (and hence the router state ignored) if this is specified 
 `params`
 : If a route name is provided, this is the dictionary of the properties to give.
 
+## Annex: Çontexts
+
+### `"router"`
+
+Interface to interract with the router - see [Routing](#routing).
+
+### `"route"`
+
+Give the hit `RouteMatch` directly contained in this route.
+
 ## Annex: Structures
 
 ### Routing
 
-When in a router, the context `"router"` is the store containing these informations :
+When in a router, the context `"router"` is the following interface :
 
 ```ts
 interface Routing {
     link(path: string | RouteMatch, props?: Dictionary): string;
-    match(path: string, props?: Dictionary, nested?: RouteMatch): RouteMatch;
+    match(path: string, props?: Dictionary): RouteMatch;
     navigate(path: string, props?: Dictionary, push: boolean = true);
     replace(path: string, props?: Dictionary);
     go(delta: number);
-    readonly route: RouteMatch;
-    readonly path: string;
-    readonly error?: any;
 }
 ```
 
 Example:
 
 ```ts
-let router = (Readable<Routing>)getContext('router');
+let router = <Routing>getContext('router');
 
-$router.navigate('/new/url');
+router.navigate('/new/url');
 ```
-
-### Lazy
-
-A lazy something (aka `Lazy<T>`) is either a something (a `T`), a callback (returning a `Lazy<T>`) or a promise (of `Lazy<T>`).
-It can be a callback returning a promise of a callback of - freedom! At the end of the chain, though, some `T` will be retrieved.
 
 ### Route definition
 
@@ -167,9 +169,8 @@ A router routes is defined with an array of `Route` : `<Router {routes}>` - Exce
 
 ```html
 <script>
-  import { Router } from "svelte-lazy-router";
+  import { Router, Route } from "svelte-lazy-router";
   import A from "./a.svelte";
-  import B from "./b.svelte";
   import C from "./c.svelte";
   import D from "./d.svelte";
 
@@ -181,9 +182,6 @@ A router routes is defined with an array of `Route` : `<Router {routes}>` - Exce
     }, {
       path: 'd', component: D
     }]
-  }, {
-    path: 'b',
-    component: B
   }]
 </script>
 <Router {routes}><Route/></Router>
@@ -195,24 +193,7 @@ There are two ways to define routes - if both are used, the routes are cumulated
 
 ```html
 <script>
-  import { Router } from "svelte-lazy-router";
+  import { Route } from "svelte-lazy-router";
 </script>
 a/ ... <Route />
-```
-
-`b.svelte`
-
-```html
-<script>
-  import { Router } from "svelte-lazy-router";
-  import C from "./c.svelte";
-  import D from "./d.svelte";
-
-  let routes = [{
-    path: 'c', component: C
-  }, {
-    path: 'd', component: D
-  }]
-</script>
-b/ ... <Router {routes}><Route /></Router>
 ```

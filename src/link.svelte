@@ -4,11 +4,12 @@
 	import { excludeProps } from "./utils";
 	export let route: string;
 	export let params: Dictionary = null;
-	const router = <Writable<Routing>>getContext('router');
+	const router = <Routing>getContext('router');
+	console.assert(router, 'Link element in a `Router`');
 	let href;
-$:	href = $router.link(route, params);
+$:	href = router.link(route, params);
 	function follow(e) {
-		$router.navigate(route, params);
+		router.navigate(route, params);
 	}
 </script>
 <a {...excludeProps($$props, 'route', 'params')}

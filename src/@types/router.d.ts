@@ -9,7 +9,11 @@ declare global {
 		name?: string;
 		path: string;
 		component?: Lazy<SvelteComponent>;
-		nested?: Route[]
+		nested?: Route[];
+		enter?(route: RouteMatch): boolean?;
+		properties?(props: Dictionary, route: RouteMatch): boolean?;
+		leave?(route: RouteMatch): string?;
+		meta?: any;	// custom-use
 	}
 
 	type Segment = {
@@ -20,12 +24,11 @@ declare global {
 	/**
 	 * Analysed routes specs
 	 */
-	interface RouteSpec {
-		name?: string;
+	interface RouteSpec extends Route {
 		segments: Segment[];
-		component?: Lazy<SvelteComponent>;
-		nested?: Lazy<RouteSpec[]>;
+		nested?: RouteSpec[];
 		parent?: RouteSpec;
+		namedSubs?: Dictionary<RouteSpec>;
 	}
 
 	interface RouteMatch {
@@ -37,18 +40,14 @@ declare global {
 
 	interface Routing {
 		link(path: string | RouteMatch, props?: Dictionary): string;
-		match(path: string, props?: Dictionary, nested?: RouteMatch): RouteMatch;
+		match(path: string, props?: Dictionary): RouteMatch;
 		navigate(path: string, props?: Dictionary, push: boolean = true);
 		replace(path: string, props?: Dictionary);
 		go(delta: number);
-		readonly route: RouteMatch;
-		readonly path: string;
-		readonly error?: any;
 	}
 
 	interface RouteHistory {
-		update(): void;
-		path(segments: string[]): string;
+		url(segments: string[]): string;
 		value: string;
 	}
 }

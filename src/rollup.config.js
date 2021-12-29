@@ -11,7 +11,7 @@ const production = !process.env.ROLLUP_WATCH;
 export default {
 	input: 'src/index.ts',
 	output: {
-		file: "dst/router-esm.js",
+		file: "dst/router.esm.js",
 		format: 'esm',
 		sourcemap: true
 	},
