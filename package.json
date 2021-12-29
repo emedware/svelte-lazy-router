@@ -1,5 +1,5 @@
 {
-  "name": "svelte-lazy-router",
+  "name": "svelte-steer",
   "version": "0.0.0",
   "description": "Router with lazy-loading and nested routes for svelte",
   "ts:main": "src/index.ts",
@@ -27,12 +27,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/emedware/svelte-lazy-router"
+    "url": "https://github.com/emedware/svelte-steer"
   },
   "bugs": {
-    "url": "https://github.com/emedware/svelte-lazy-router/issues"
+    "url": "https://github.com/emedware/svelte-steer/issues"
   },
-  "homepage": "https://github.com/emedware/svelte-lazy-router",
+  "homepage": "https://github.com/emedware/svelte-steer",
   "author": "E Med Ware",
   "license": "ISC",
   "dependencies": {

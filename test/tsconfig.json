@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"outDir": "./demo/",
 		"paths": {
-			"svelte-lazy-router": ["../src/index"]
+			"svelte-steer": ["../src/index"]
 		}
 	},
 	"include": [".", "../src"],

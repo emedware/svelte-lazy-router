@@ -1,6 +1,6 @@
-# svelte-lazy-router
+# svelte-steer
 
-[![npm](https://img.shields.io/npm/v/svelte-lazy-router.svg)](https://www.npmjs.com/package/svelte-lazy-router)
+[![npm](https://img.shields.io/npm/v/svelte-steer.svg)](https://www.npmjs.com/package/svelte-steer)
 
 As there is curently no dedicated nor even suitable router for svelte, and as we needed a powerful and flexible one, we decided to make one and make it a dedicated package.
 
@@ -9,11 +9,11 @@ Just released [2021-12-29], it is still highly to be tested, corrected and recei
 ## Installation / usage
 
 ```sh
-npm i -S svelte-lazy-router
+npm i -S svelte-steer
 ```
 
 ```typescript
-import { Router, Route, Link, link } from "svelte-lazy-router";
+import { Router, Route, Link, link } from "svelte-steer";
 const router = <Writable<Routing>>getContext('router');
 ----
 $:    myLink = $router.link('user', {id: 42});
@@ -64,7 +64,7 @@ By default, `H5History` is used.
 ...
 </Router>
 <script lang="ts">
-    import { HashHistory } from "svelte-lazy-router";
+    import { HashHistory } from "svelte-steer";
     ...
 </script>
 ```
@@ -184,7 +184,7 @@ A router routes is defined with an array of `Route` : `<Router {routes}>` - Exce
 
 ```html
 <script>
-  import { Router, Route } from "svelte-lazy-router";
+  import { Router, Route } from "svelte-steer";
   import A from "./a.svelte";
   import C from "./c.svelte";
   import D from "./d.svelte";
@@ -206,7 +206,7 @@ A router routes is defined with an array of `Route` : `<Router {routes}>` - Exce
 
 ```html
 <script>
-  import { Route } from "svelte-lazy-router";
+  import { Route } from "svelte-steer";
 </script>
 a/ ... <Route />
 ```
@@ -222,7 +222,8 @@ Fixes:
 
 Functionalities:
 
-- lazy loading - add a default behaviour for "Loading..." ?
+- lazy loading - add a default behaviour for "Loading..." ? Dim old page? youtube-like "progress" on the screen-top?
+- page preservation/destruction mgt
 - path i18n: "/login"|en, "/connexion"|fr, "/autentificare"|ro, ...
 - multi-parts routes : menu, center, toolbox, ....
 Management of "remaining route", either:
