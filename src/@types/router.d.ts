@@ -10,9 +10,9 @@ declare global {
 		path: string;
 		component?: Lazy<SvelteComponent>;
 		nested?: Route[];
-		enter?(route: RouteMatch): boolean?;
-		properties?(props: Dictionary, route: RouteMatch): boolean?;
-		leave?(route: RouteMatch): string?;
+		enter?(route: RouteMatch): boolean | void;
+		properties?(props: Dictionary, route: RouteMatch): boolean | void;
+		leave?(route: RouteMatch): string | void;
 		meta?: any;	// custom-use
 	}
 

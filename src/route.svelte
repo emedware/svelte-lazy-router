@@ -30,7 +30,7 @@
 		routerRoute = <Readable<RouteMatch>>getContext('route'),
 		routerError = <Readable<Error>>getContext('route-error');
 	let setRoute: (route: RouteMatch)=> void,
-		props: Dictionary = {}, component: SvelteComponent,
+		props: Dictionary = {}, component: SvelteComponent, leavingId: object, leaving: Promise<void>,
 		forwardProps, loadedMatch: RouteMatch = null, triedSpec: RouteSpec, triedProps: Dictionary;
 $:	forwardProps = excludeProps($$props, 'route', 'params');
 
@@ -43,30 +43,44 @@ $:	if(error) error.set($routerError);
 	function propDiff(newp: Dictionary, oldp: Dictionary) {
 		return Object.getOwnPropertyNames(newp).some(pn=> newp[pn] !== oldp[pn])
 	}
-	async function leave() {
+	async function promptLeave(toward: RouteMatch) {
 		if(loadedMatch) {
-			let leavePrompt = [], prompts: ((route: RouteMatch)=> string)[] = [], prompt;
+			let leavePrompt = [], prompt: string, matchBrowser: RouteMatch, stillIn = new Set<RouteSpec>();
 			// -> LIFO
-			for(let matchBrowser = loadedMatch; matchBrowser; matchBrowser = matchBrowser.nested)
-				if(matchBrowser.spec.leave) prompts.push(()=> matchBrowser.spec.leave(matchBrowser));
-			while(prompt = prompts.pop())
-				if(prompt = prompt())
+			// -> Browse by `parents` to have even the component-less
+			for(matchBrowser = toward; matchBrowser.nested; matchBrowser = matchBrowser.nested);
+			for(; matchBrowser; matchBrowser = matchBrowser.parent) stillIn.add(matchBrowser.spec);
+			for(matchBrowser = loadedMatch; matchBrowser.nested; matchBrowser = matchBrowser.nested);
+			while(matchBrowser && !stillIn.has(matchBrowser.spec)) {
+				if(matchBrowser.spec.leave && (prompt = <string>matchBrowser.spec.leave(matchBrowser)))
 					leavePrompt.push(prompt);
+				matchBrowser = matchBrowser.parent;
+			}
+					
 			if(leavePrompt.length && !await leavePrompter(leavePrompt.join('\n')))
 				throw new NavigationCancelledError(loadedMatch, NavigationType.Leave);
 		}
+	}
+	async function leave(toward: RouteMatch) {
+		let callId = leavingId = {}; // unique object created in this call
+		if(!leaving) leaving = promptLeave(toward);
+		await leaving;	// `leavingId` can change here, "asynchronously"
+		leaving = null;
+		return leavingId === callId;
 	}
 	async function LoadRoute(match: RouteMatch) {
 		loading.set(true);
 		try {
 			if(!match) {
 				component = null;
-				await leave();
+				await leave(null);
 				loadedMatch = null;
 			} else {
-				let newProps = {};
-				let matchBrowser: RouteMatch = match;
+				let newProps = {},
+					matchBrowser: RouteMatch = match,
+					matches: RouteMatch[] = [];
 				do {
+					matches.push(matchBrowser);
 					for(let pn of Object.getOwnPropertyNames(match.props))
 						newProps[pn] = match.props[pn]
 					matchBrowser = matchBrowser.parent;
@@ -74,11 +88,20 @@ $:	if(error) error.set($routerError);
 				
 				const matchChange = !loadedMatch || loadedMatch.spec !== match.spec,
 					alreadyTried = triedSpec === match.spec;
-				if(!alreadyTried && matchChange) {
-					triedSpec = match.spec;
-					await leave();
-					if(match.spec.enter && match.spec.enter(match) === false)
-						throw new NavigationCancelledError(match, NavigationType.Enter);
+				if(matchChange) {
+					if(!(await leave(match))) return;
+					if(!alreadyTried) {
+						triedSpec = match.spec;
+						let alreadyIn = new Set<RouteSpec>(),
+							loadedAnalysis = loadedMatch;
+						if(loadedMatch) do {
+							alreadyIn.add(loadedAnalysis.spec);
+							loadedAnalysis = loadedAnalysis.parent;
+						} while(loadedAnalysis && !loadedAnalysis.spec.component);
+						while((matchBrowser = matches.pop()))
+							if(!alreadyIn.has(matchBrowser.spec) && matchBrowser.spec.enter && matchBrowser.spec.enter(matchBrowser) === false)
+								throw new NavigationCancelledError(matchBrowser, NavigationType.Enter);
+					}
 					triedProps = props = {};
 				}
 				if(alreadyTried && !propDiff(newProps, triedProps)) return;

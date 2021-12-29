@@ -7,7 +7,7 @@
 	export var variableMarker: RegExp = /^\:/;
 	export var routes: Route[];
 	export var history: Readable<RouteHistory> = H5History;
-	export var leavePrompter: LeavePrompter;
+	export var leavePrompter: LeavePrompter = null;
 	
 	// Useless for now - if embeded router, take parent's leave-prompter if none specified
 	if(leavePrompter) setContext('leave-prompter', leavePrompter);
@@ -89,6 +89,8 @@ $:	if(setError) setError(displayedError);
 			.split('/')
 			.filter(segment => segment);
 	}
+
+	// TODO window onBeforeClose
 
 	/**
 	* Find a route along 2 scenarii

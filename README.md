@@ -9,7 +9,7 @@ npm i -S svelte-lazy-router
 ```
 
 ```typescript
-import { Router, Link, link } from "svelte-lazy-router";
+import { Router, Route, Link, link } from "svelte-lazy-router";
 const router = <Writable<Routing>>getContext('router');
 ----
 $:    myLink = $router.link('user', {id: 42});
@@ -42,13 +42,13 @@ The `Route` element effectively displays the selected route.
 #### Properties
 
 `variableMarker`
-: `/^\:/`
+: `/^\:/` : Variables in the path are written `":variable-name"`
 
 `routes`
 : Gives the `Route[]` tree of routes to serve
 
 `history`
-: Choose a history mode. Two modes are defined by default.
+: History mode to use. Two modes are defined by default.
 
 - `H5History` uses the Html5 history mode : `http://mysite/my/route/path`
 - `HashHistory` uses the hash as history mode : `http://mysite#/my/route/path`
@@ -82,7 +82,7 @@ A route can be forced (and hence the router state ignored) if this is specified 
 
 - `loading`: `Writable<boolean>`
 : Set to true when waiting a lazy-load
-- `error`: `Readable<Error>`
+- `error`: `Writable<Error>`
 : Set (or unset if value is `undefined`) the route-related error. In error state, the slot is displayed. The slot is displayed without error when the route is not found.
 
 ### Link
@@ -95,7 +95,7 @@ A route can be forced (and hence the router state ignored) if this is specified 
 `params`
 : If a route name is provided, this is the dictionary of the properties to give.
 
-## Annex: Çontexts
+## Annex: Contexts
 
 ### `"router"`
 
@@ -103,7 +103,7 @@ Interface to interract with the router - see [Routing](#routing).
 
 ### `"route"`
 
-Give the hit `RouteMatch` directly contained in this route.
+Give the hit [`RouteMatch`](#route-match) directly contained in this route.
 
 ## Annex: Structures
 
@@ -133,10 +133,14 @@ router.navigate('/new/url');
 
 ```ts
 interface Route {
-  name?: string;
-  path: string;
-  component?: Lazy<SvelteComponent>;
-  nested?: Route[]
+    name?: string;
+    path: string;
+    component?: Lazy<SvelteComponent>;
+    nested?: Route[];
+    enter?(route: RouteMatch): boolean | void;
+    properties?(props: Dictionary, route: RouteMatch): boolean | void;
+    leave?(route: RouteMatch): string | void;
+    meta?: any;
 }
 ```
 
@@ -145,6 +149,13 @@ interface Route {
 - `component` is the component to display (lazy-loaded). Optional: if there are nested routes, not specifying a component is
  equivalent to specify a component containing only `<Router />` and hence displaying directly the nested route.
 - `nested` is an array (lazy-loaded) of nested routes.
+- `meta` is not used internally and is meant to be used by the user.
+
+Call-backs
+
+- `enter` is called when a route is entered. Explicitely returning false cancels the navigation.
+- `leave` is called when a route is exited. Returning a string will raise a prompt with that string to ask user's confirmation of leaving.
+- `properties` is called when properties are changed or just after `enter` if there are properties. Explicitely returning false cancels the navigation.
 
 ### Route match
 
@@ -163,7 +174,7 @@ interface RouteMatch {
 
 ## Nesting
 
-A router routes is defined with an array of `Route` : `<Router {routes}>` - Except when it is a nested router. Nesting can be done in two ways, illustrated here : available routes are `a/c`, `a/d`, `b/c`, `b/d`.
+A router routes is defined with an array of `Route` : `<Router {routes}>` - Except when it is a nested router. Nesting can be done in two ways, illustrated here : available routes are `a`, `a/c`, `a/d`.
 
 `index.svelte`
 
@@ -187,8 +198,6 @@ A router routes is defined with an array of `Route` : `<Router {routes}>` - Exce
 <Router {routes}><Route/></Router>
 ```
 
-There are two ways to define routes - if both are used, the routes are cumulated
-
 `a.svelte`
 
 ```html
@@ -197,3 +206,5 @@ There are two ways to define routes - if both are used, the routes are cumulated
 </script>
 a/ ... <Route />
 ```
+
+If route `a` does not define a component, the sub-component (`C` or `D`) will be directly used
