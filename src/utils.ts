@@ -17,7 +17,7 @@ export function excludeProps(props: any, ...exclude: string[]) {
 export function route2string(rs: RouteSpec) {
 	let rv = [];
 	while(rs) {
-		rv = [rs.path, ...rv];
+		rv = [...rs.segments.map(s=> s.name), ...rv];
 		rs = rs.parent;
 	}
 	return '/' + rv.join('/');

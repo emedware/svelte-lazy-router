@@ -1,6 +1,6 @@
 {
   "name": "svelte-steer",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Router with lazy-loading and nested routes for svelte",
   "ts:main": "src/index.ts",
   "main": "dst/router-esm.js",
@@ -36,10 +36,6 @@
   "author": "E Med Ware",
   "license": "ISC",
   "dependencies": {
-    "svelte": "^3.44.3",
-    "svelte-dts": "^0.3.6",
-    "svelte-preprocess": "^4.9.8",
-    "typescript": "^4.5.2"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.1",
@@ -53,6 +49,10 @@
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-dts": "^4.1.0",
     "rollup-plugin-svelte": "^7.1.0",
-    "rollup-plugin-ts": "^2.0.4"
+    "rollup-plugin-ts": "^2.0.4",
+    "svelte": "^3.44.3",
+    "svelte-dts": "^0.3.6",
+    "svelte-preprocess": "^4.9.8",
+    "typescript": "^4.5.2"
   }
 }

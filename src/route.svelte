@@ -58,6 +58,7 @@ $:	if(error) error.set($routerError);
 		leaving = null;
 		return leavingId === callId;
 	}
+	// TODO http://localhost:8000/#lz1/52/b -> http://localhost:8000/#lz1/62/b : props+enter (no leave) : should be no "enter"
 	async function LoadRoute(match: RouteMatch) {
 		loading.set(true);
 		try {
@@ -89,7 +90,7 @@ $:	if(error) error.set($routerError);
 							loadedAnalysis = loadedAnalysis.parent;
 						} while(loadedAnalysis && !loadedAnalysis.spec.component);
 						while((matchBrowser = matches.pop()))
-							if(!alreadyIn.has(matchBrowser.spec) && matchBrowser.spec.enter && await matchBrowser.spec.enter(matchBrowser) === false)
+							if(!alreadyIn.has(matchBrowser.spec) && matchBrowser.spec.enter && matchBrowser.spec.enter(matchBrowser) === false)
 								throw new NavigationCancelledError(matchBrowser, NavigationType.Enter);
 					}
 					triedProps = props = {};
@@ -99,7 +100,7 @@ $:	if(error) error.set($routerError);
 					triedProps = newProps;
 					let propChg = Object.create(props);
 					for(let pn in newProps) if(newProps[pn]!== props[pn]) propChg[pn] = newProps[pn];
-					if(match.spec.properties && await match.spec.properties(propChg, match) === false)
+					if(match.spec.properties && match.spec.properties(propChg, match) === false)
 						throw new NavigationCancelledError(match, NavigationType.Properties);
 					props = newProps;
 				}
