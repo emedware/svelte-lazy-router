@@ -2,8 +2,9 @@
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
 		"outDir": "./demo/",
+		"declaration": false,
 		"paths": {
-			"svelte-steer": ["../src/index"]
+			"svelte-steer": ["./"]
 		}
 	},
 	"include": [".", "../src"],

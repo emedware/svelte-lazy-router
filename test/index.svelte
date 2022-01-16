@@ -5,7 +5,7 @@
 	<Game />
 </Router>
 <script lang="ts">
-	import { Link, Router, Route, HashHistory } from "../src/index";
+	import { Router, HashHistory } from "svelte-steer";
 	import Routes from "./routes";
 	import Game from "./game.svelte";
 </script>

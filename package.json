@@ -2,18 +2,20 @@
   "name": "svelte-steer",
   "version": "0.0.1",
   "description": "Router with lazy-loading and nested routes for svelte",
+  "svelte": "src/index.ts",
   "ts:main": "src/index.ts",
-  "main": "dst/router-esm.js",
-  "module": "dst/router-esm.js",
-  "typings": "dst/index.d.ts",
+  "main": "dst/svelte-steer",
+  "module": "dst/svelte-steer.mjs",
+  "typings": "dst/svelte-steer.d.ts",
   "sideEffects": false,
   "scripts": {
-    "start": "rollup -c src/rollup.config.js -w",
+    "start": "rimraf dst && rollup -c src/rollup.config.js -w",
     "test": "concurrently --kill-others --names web-dev-server \"npm run test:watch\" \"npm run test:serve\"",
-    "prepack": "rollup -c src/rollup.config.js",
+    "build": "rimraf dst && rollup -c src/rollup.config.js",
     "test:watch": "rimraf demo && rollup -c test/rollup.config.js -w",
     "test:serve": "web-dev-server --config test/web-dev-server.config.js",
-    "test:build": "rimraf demo && rollup -c test/rollup.config.js"
+    "test:build": "rimraf demo && rollup -c test/rollup.config.js",
+    "prepublishOnly": "npm run build"
   },
   "directories": {
     "example": "test",
@@ -35,9 +37,8 @@
   "homepage": "https://github.com/emedware/svelte-steer",
   "author": "E Med Ware",
   "license": "ISC",
-  "dependencies": {
-  },
   "devDependencies": {
+    "@rollup/plugin-alias": "^3.1.9",
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-node-resolve": "^13.0.6",
     "@tsconfig/svelte": "^2.0.1",
@@ -49,6 +50,7 @@
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-dts": "^4.1.0",
     "rollup-plugin-svelte": "^7.1.0",
+    "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-ts": "^2.0.4",
     "svelte": "^3.44.3",
     "svelte-dts": "^0.3.6",

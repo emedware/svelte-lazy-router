@@ -14,5 +14,5 @@
 	You are here --&gt; <Route>404</Route> &lt;--
 </div>
 <script lang="ts">
-	import { Link, Route } from "../src/index";
+	import { Link, Route } from "svelte-steer";
 </script>

@@ -3,24 +3,30 @@ import svelte from 'rollup-plugin-svelte';
 import preprocess from 'svelte-preprocess';
 import commonjs from '@rollup/plugin-commonjs';
 import autoExternal from 'rollup-plugin-auto-external';
-import { nodeResolve } from '@rollup/plugin-node-resolve';
-//import dts from "rollup-plugin-dts";
-//import svelteDts from "svelte-dts";
+import { terser } from "rollup-plugin-terser";
+import pkg from "../package.json";
+import dts from "rollup-plugin-dts";
+import svelteDts from "svelte-dts";
 
 const production = !process.env.ROLLUP_WATCH;
+const name = pkg.name
+	.replace(/^(@\S+\/)?(svelte-)?(\S+)/, '$3')
+	.replace(/^\w/, m => m.toUpperCase())
+	.replace(/-\w/g, m => m[1].toUpperCase());
 
 export default {
 	input: 'src/index.ts',
-	output: {
-		file: "dst/router.esm.js",
-		format: 'esm',
-		sourcemap: true
-	},
+	output: [
+		// Take care that, without a svelte-steer.d.ts, it uses the .js instead of the .mjs
+		{ file: pkg.module, format: 'esm' },
+		{ file: pkg.main+'.js', format: 'umd', name },
+		{ file: pkg.main+'.min.js', format: 'iife', name, plugins: [terser()] }
+	],
 	watch: !production && {
 		include: ['src/**/*']
 	},
 	plugins: [
-		//svelteDts({}),
+		//svelteDts({output: 'dst/svelte-dts.d.ts'}),
 		//dts(),
 		autoExternal(),
 		typescript({
@@ -31,10 +37,6 @@ export default {
 				dev: !production
 			},
 			preprocess: preprocess()
-		}),
-		nodeResolve({
-			browser: true,
-			dedupe: ['svelte']
 		}),
 		commonjs({
 			include: /node_modules/

@@ -15,7 +15,7 @@ export enum NavigationType {
 }
 
 /**
- * A `enter` or `leave` callback has cancelled navigation
+ * A navigation callback has cancelled navigation
  */
 export class NavigationCancelledError extends Error {
 	name: string = "navigation-cancelled";

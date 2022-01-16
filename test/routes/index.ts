@@ -1,4 +1,4 @@
-import { route2string } from "../../src";
+import { route2string } from "svelte-steer";
 import C1 from "./1.svelte";
 import C2 from "./2.svelte";
 import Alpha from "./alpha.svelte";
