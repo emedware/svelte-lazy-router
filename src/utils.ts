@@ -1,3 +1,6 @@
+//import type { RouteSpec } from "router";
+//import type { Constructor, Lazy } from "utils";
+
 export async function lazy<T>(obj: Lazy<T>, ctor?: Constructor<T>): Promise<T> {
 	while(obj instanceof Promise ||
 		(obj instanceof Function &&

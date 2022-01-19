@@ -6,6 +6,8 @@
 	<slot {...forwardProps} />
 {/if}
 <script type="ts">
+	//import type { RouteMatch, RouteSpec, Routing } from "router";
+	//import type { Dictionary, LeavePrompter } from "utils";
 	import { getContext, setContext, SvelteComponent } from "svelte";
 	import { readable, Readable, writable, Writable } from "svelte/store";
 	import { NavigationCancelledError, NavigationType } from "./errors";
@@ -25,7 +27,7 @@
 $:	forwardProps = excludeProps($$props, 'route', 'params');
 
 	// "route" context is not initialized before call to `LoadRoute`
-	//loading.set(true);
+	loading.set(true);
 	setContext('route', readable(null, (set)=> { setRoute = set; }));
 $:	LoadRoute(route ? router.match(route, params) : $routerRoute && $routerRoute.nested);
 $:	if(setRoute) setRoute(loadedMatch);

@@ -1,6 +1,7 @@
 <script lang="ts">
+	//import type { Routing } from "router";
+	//import type { Dictionary } from "utils";
 	import { getContext } from "svelte";
-	import type { Writable } from "svelte/store";
 	import { excludeProps } from "./utils";
 	export let route: string;
 	export let params: Dictionary = null;

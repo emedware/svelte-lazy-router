@@ -1,3 +1,4 @@
+//import type { RouteMatch, RouteSpec } from "router";
 import { route2string } from "./utils";
 
 /**

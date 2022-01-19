@@ -1,5 +1,8 @@
 <slot />
 <script lang="ts">
+	//import type { Route, RouteHistory, RouteMatch, RouteSpec } from "router";
+	//import type { Dictionary, LeavePrompter } from "utils";
+
 	import { getContext, setContext } from "svelte";
 	import { readable, Readable } from "svelte/store";
 	import { AmbiguousNameError, RouteNotFoundError } from "./errors";

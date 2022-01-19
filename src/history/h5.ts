@@ -1,3 +1,4 @@
+//import type { RouteHistory } from "@types/router";
 import { readable } from "svelte/store";
 
 let globalSet: (value: RouteHistory)=> void = null;

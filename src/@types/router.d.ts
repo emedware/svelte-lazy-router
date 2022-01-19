@@ -1,6 +1,7 @@
-import { SvelteComponent } from "svelte";
-import EventEmitter from "events";
+import type { SvelteComponent } from "svelte";
+//import type { Dictionary, Lazy } from "./utils";
 
+//declare module "svelte-steer" {
 declare global {
 	/**
 	 * Routes as specified by the user
@@ -41,7 +42,7 @@ declare global {
 	interface Routing {
 		link(path: string | RouteMatch, props?: Dictionary): string;
 		match(path: string, props?: Dictionary): RouteMatch;
-		navigate(path: string, props?: Dictionary, push: boolean = true);
+		navigate(path: string, props?: Dictionary, push?: boolean);
 		replace(path: string, props?: Dictionary);
 		go(delta: number);
 	}

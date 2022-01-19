@@ -9,12 +9,12 @@
   "typings": "dst/svelte-steer.d.ts",
   "sideEffects": false,
   "scripts": {
-    "start": "rimraf dst && rollup -c src/rollup.config.js -w",
+    "start": "rimraf dst/* && rollup -c src/rollup.config.js -w",
     "test": "concurrently --kill-others --names web-dev-server \"npm run test:watch\" \"npm run test:serve\"",
-    "build": "rimraf dst && rollup -c src/rollup.config.js",
-    "test:watch": "rimraf demo && rollup -c test/rollup.config.js -w",
+    "build": "rimraf dst/* && rollup -c src/rollup.config.js",
+    "test:watch": "rimraf demo/* && rollup -c test/rollup.config.js -w",
     "test:serve": "web-dev-server --config test/web-dev-server.config.js",
-    "test:build": "rimraf demo && rollup -c test/rollup.config.js",
+    "test:build": "rimraf demo/* && rollup -c test/rollup.config.js",
     "prepublishOnly": "npm run build"
   },
   "directories": {
