@@ -1,5 +1,5 @@
 import type { SvelteComponent } from "svelte";
-//import type { Dictionary, Lazy } from "./utils";
+import type { Dictionary, Lazy } from "./utils";
 
 //declare module "svelte-steer" {
 declare global {

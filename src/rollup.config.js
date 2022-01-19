@@ -8,6 +8,7 @@ import copy from 'rollup-plugin-copy';
 import pkg from "../package.json";
 import dts from "rollup-plugin-dts";
 import svelteDts from "svelte-dts";
+import dstBundle from "dts-bundle";
 
 const production = !process.env.ROLLUP_WATCH;
 const name = pkg.name
@@ -27,7 +28,7 @@ export default {
 		include: ['src/**/*']
 	},
 	plugins: [
-		svelteDts({output: 'dst/svelte-steer.sdts.d.ts'}),
+		//svelteDts({output: 'dst/svelte-steer.sdts.d.ts'}),
 		//dts(),
 		copy({
 			targets: [
@@ -49,3 +50,34 @@ export default {
 		})
 	]
 };
+
+var opts = {
+    name: 'svelte-steer',
+    main: 'src/bundle.d.ts',
+    baseDir: 'src',
+    out: 'dst/svelte-steer.d.ts',
+    externals: false,
+    referenceExternals: false,
+    removeSource: false,
+    newline: os.EOL,
+    indent: '	',
+    prefix: '__',
+    separator: '/',
+    verbose: false,
+    emitOnIncludedFileNotFound: false,
+    emitOnNoIncludedFileNotFound: false,    
+    // output d.ts as designed for module folder. (no declare modules)
+    outputAsModuleFolder: false,
+    // path to file that contains the header
+    // // insert a header in output file. i.e.: http://definitelytyped.org/guides/contributing.html#header
+    // - default: null
+    ////headerPath: "path/to/header/file",
+    // text of the the header
+    // doesn't work with headerPath
+    // // insert a header in output file. i.e.: http://definitelytyped.org/guides/contributing.html#header
+    // - default: ''
+    ////headerTex: "" 
+};
+ 
+// run it
+dstBundle.bundle(opts);
