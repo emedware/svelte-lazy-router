@@ -4,7 +4,7 @@ import { SvelteComponentTyped } from "svelte";
 	interface routeProps {
 	}
 
-	declare class route extends SvelteComponentTyped<
+	class route extends SvelteComponentTyped<
 		routeProps,
 		{  },
 		{  }

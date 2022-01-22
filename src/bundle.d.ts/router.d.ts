@@ -9,7 +9,7 @@ import { Readable } from "svelte/store";
 		leavePrompter: LeavePrompter
 	}
 
-	declare class router extends SvelteComponentTyped<
+	class router extends SvelteComponentTyped<
 		routerProps,
 		{  },
 		{  }

@@ -16,7 +16,10 @@ const name = pkg.name
 	.replace(/^\w/, m => m.toUpperCase())
 	.replace(/-\w/g, m => m[1].toUpperCase());
 
-export default {
+/**
+ * @type {import('rollup').RollupOptions}
+ */
+export default [{
 	input: 'src/index.ts',
 	output: [
 		// Take care that, without a svelte-steer.d.ts, it uses the .js instead of the .mjs
@@ -30,11 +33,11 @@ export default {
 	plugins: [
 		//svelteDts({output: 'dst/svelte-steer.sdts.d.ts'}),
 		//dts(),
-		copy({
+		/*copy({
 			targets: [
 				{src: 'src/@types/*', dest: 'dst'}
 			]
-		}),
+		}),*/
 		autoExternal(),
 		typescript({
 			allowNonTsExtensions: true
@@ -49,17 +52,30 @@ export default {
 			include: /node_modules/
 		})
 	]
-};
+}, {
+	input: 'src/bundle.d.ts/index.d.ts',
+	output: [
+		{ file: pkg.typings, format: 'es', sourcemap: !production }
+	],
+	watch: !production && {
+		include: ['src/**/*']
+	},
+	plugins: [
+		dts({
+			
+		})
+	]
+}];
 
 var opts = {
     name: 'svelte-steer',
-    main: 'src/bundle.d.ts',
+    main: 'src/bundle.d.ts/index.d.ts',
     baseDir: 'src',
-    out: 'dst/svelte-steer.d.ts',
+    out: '../dst/svelte-steer.d.ts',
     externals: false,
     referenceExternals: false,
     removeSource: false,
-    newline: os.EOL,
+    newline: '\n',
     indent: '	',
     prefix: '__',
     separator: '/',
@@ -79,5 +95,4 @@ var opts = {
     ////headerTex: "" 
 };
  
-// run it
 dstBundle.bundle(opts);

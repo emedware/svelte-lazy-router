@@ -6,6 +6,7 @@
   "ts:main": "src/index.ts",
   "main": "dst/svelte-steer",
   "module": "dst/svelte-steer.mjs",
+  "types": "dst/svelte-steer.d.ts",
   "typings": "dst/svelte-steer.d.ts",
   "sideEffects": false,
   "scripts": {

@@ -1,6 +1,8 @@
-export * from "../errors";
-export * from "../utils";
+import "./utils.d.ts";
 
-export * from "./link";
-export * from "./route";
-export * from "./router";
+import  "./link";
+import  "./route";
+import  "./router";
+
+import "../@types/generics";
+import "../@types/router";

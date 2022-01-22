@@ -6,7 +6,7 @@ declare module 'svelte-steer/link.svelte' {
 		params: Dictionary;
 	}
 
-	declare class link extends SvelteComponentTyped<
+	class link extends SvelteComponentTyped<
 		linkProps,
 		{  },
 		{  }

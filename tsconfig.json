@@ -4,7 +4,7 @@
 		"rootDir": "./",
 		"outDir": "./dst/",
 		"baseUrl": "./",
-		"declaration": true,
+		"declaration": false,
 		"inlineSources": false,
 		"noImplicitAny": false,
 		"module": "ESNext",
