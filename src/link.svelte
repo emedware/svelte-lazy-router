@@ -1,15 +1,14 @@
 <script lang="ts">
 	//import type { Routing } from "router";
-	//import type { Dictionary } from "utils";
 	import { getContext } from "svelte";
 	import { excludeProps } from "./utils";
 	export let route: string;
-	export let params: Dictionary = null;
+	export let params: Record<string, string> = null;
 	const router = <Routing>getContext('router');
 	console.assert(router, 'Link element in a `Router`');
 	let href;
 $:	href = router.link(route, params);
-	function follow(e) {
+	function follow() {
 		router.navigate(route, params);
 	}
 </script>

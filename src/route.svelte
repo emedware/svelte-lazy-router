@@ -6,14 +6,13 @@
 	<slot {...forwardProps} />
 {/if}
 <script type="ts">
-	//import type { RouteMatch, RouteSpec, Routing } from "router";
-	//import type { Dictionary, LeavePrompter } from "utils";
+	//import type { LeavePrompter, RouteMatch, RouteSpec, Routing } from "router";
 	import { getContext, setContext, SvelteComponent } from "svelte";
 	import { readable, Readable, writable, Writable } from "svelte/store";
 	import { NavigationCancelledError, NavigationType } from "./errors";
 	import { excludeProps, lazy } from "./utils";
 	export let route: string = null;
-	export let params: Dictionary = null;
+	export let params: Record<string, string> = null;
 	export let loading: Writable<boolean> = writable(false);	// If none is provided, we are still using it internally
 	export let error: Writable<Error> = null;
 
@@ -22,8 +21,8 @@
 		routerRoute = <Readable<RouteMatch>>getContext('route'),
 		routerError = <Readable<Error>>getContext('route-error');
 	let setRoute: (route: RouteMatch)=> void,
-		props: Dictionary = {}, component: SvelteComponent, leavingId: object, leaving: Promise<void>,
-		forwardProps, loadedMatch: RouteMatch = null, triedSpec: RouteSpec, triedProps: Dictionary;
+		props: Record<string, string> = {}, component: SvelteComponent, leavingId: object, leaving: Promise<void>,
+		forwardProps, loadedMatch: RouteMatch = null, triedSpec: RouteSpec, triedProps: Record<string, string>;
 $:	forwardProps = excludeProps($$props, 'route', 'params');
 
 	// "route" context is not initialized before call to `LoadRoute`
@@ -32,7 +31,7 @@ $:	forwardProps = excludeProps($$props, 'route', 'params');
 $:	LoadRoute(route ? router.match(route, params) : $routerRoute && $routerRoute.nested);
 $:	if(setRoute) setRoute(loadedMatch);
 $:	if(error) error.set($routerError);
-	function propDiff(newp: Dictionary, oldp: Dictionary) {
+	function propDiff(newp: Record<string, string>, oldp: Record<string, string>) {
 		return Object.getOwnPropertyNames(newp).some(pn=> newp[pn] !== oldp[pn])
 	}
 	async function promptLeave(toward: RouteMatch) {

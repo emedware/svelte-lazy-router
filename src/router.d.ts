@@ -1,5 +1,5 @@
 import type { SvelteComponent } from "svelte";
-import type { Dictionary, Lazy } from "./utils";
+import type { Lazy } from "./utils";
 
 //declare module "svelte-steer" {
 declare global {
@@ -12,7 +12,7 @@ declare global {
 		component?: Lazy<SvelteComponent>;
 		nested?: Route[];
 		enter?(route: RouteMatch): boolean | void;
-		properties?(props: Dictionary, route: RouteMatch): boolean | void;
+		properties?(props: Record<string, string>, route: RouteMatch): boolean | void;
 		leave?(route: RouteMatch): string | void;
 		meta?: any;	// custom-use
 	}
@@ -29,21 +29,21 @@ declare global {
 		segments: Segment[];
 		nested?: RouteSpec[];
 		parent?: RouteSpec;
-		namedSubs?: Dictionary<RouteSpec>;
+		namedSubs?: Record<string, RouteSpec>;
 	}
 
 	interface RouteMatch {
 		spec: RouteSpec;
 		parent?: RouteMatch;
 		nested?: RouteMatch;
-		props: Dictionary<any>;
+		props: Record<string, string>;
 	}
 
 	interface Routing {
-		link(path: string | RouteMatch, props?: Dictionary): string;
-		match(path: string, props?: Dictionary): RouteMatch;
-		navigate(path: string, props?: Dictionary, push?: boolean);
-		replace(path: string, props?: Dictionary);
+		link(path: string | RouteMatch, props?: Record<string, string>): string;
+		match(path: string, props?: Record<string, string>): RouteMatch;
+		navigate(path: string, props?: Record<string, string>, push?: boolean);
+		replace(path: string, props?: Record<string, string>);
 		go(delta: number);
 	}
 

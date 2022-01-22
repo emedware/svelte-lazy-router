@@ -1,7 +1,6 @@
 <slot />
 <script lang="ts">
 	//import type { Route, RouteHistory, RouteMatch, RouteSpec } from "router";
-	//import type { Dictionary, LeavePrompter } from "utils";
 
 	import { getContext, setContext } from "svelte";
 	import { readable, Readable } from "svelte/store";
@@ -20,7 +19,7 @@
 
 	const rootSpec: RouteSpec = {path: '', segments: []};
 	let analyzedRoutes: Route[],
-		namedRoutes: Dictionary<RouteSpec>,
+		namedRoutes: Record<string, RouteSpec>,
 		specs: RouteSpec[];
 	setContext('router', {
 		link, match,
@@ -59,7 +58,7 @@ $:	computeRoute($history.value);
 $:	if(setRoute) setRoute(displayedRoute);
 $:	if(setRouteSub) setRouteSub(routeSub);
 $:	if(setError) setError(displayedError);
-	function setName<T>(dst: Dictionary<T>, name: string, value: T, ambiguous: T) {
+	function setName<T>(dst: Record<string, T>, name: string, value: T, ambiguous: T) {
 		dst[name] = dst.hasOwnProperty(name) ? ambiguous : value;
 	}
 	function analyzeRoutes(routes: Route[], parent?: RouteSpec): RouteSpec[] {
@@ -100,9 +99,9 @@ $:	if(setError) setError(displayedError);
 	* - a complete path and no props
 	* - a route name and props
 	* @param path string: path/name of the route (name if props are specified, path if not)
-	* @param props Dictionary properties of the route as only a name is provided
+	* @param props Record<string, string> properties of the route as only a name is provided
 	*/
-	function match(path: string | RouteSpec, props?: Dictionary, nested?: RouteMatch): RouteMatch {
+	function match(path: string | RouteSpec, props?: Record<string, string>, nested?: RouteMatch): RouteMatch {
 		let spec: RouteSpec;
 		if('string'=== typeof path) {
 			if(!path || (<string>path).startsWith('/')) return getSubRoute(specs, segmented(path));
@@ -126,7 +125,7 @@ $:	if(setError) setError(displayedError);
 		return rv;
 	}
 
-	function getSubRoute(specs: RouteSpec[], segments: string[], props: Dictionary = {}, parent?: RouteMatch): RouteMatch {
+	function getSubRoute(specs: RouteSpec[], segments: string[], props: Record<string, string> = {}, parent?: RouteMatch): RouteMatch {
 		for(let route of specs) {
 			let rp = Object.create(props);
 			if(route.segments.length > segments.length ||
@@ -149,7 +148,7 @@ $:	if(setError) setError(displayedError);
 		throw new RouteNotFoundError(parent, '/' + segments.join('/'));
 	}
 
-	function link(path: string | RouteMatch, props?: Dictionary): string {
+	function link(path: string | RouteMatch, props?: Record<string, string>): string {
 		let route = typeof path === 'string' ? match(<string>path, props) : <RouteMatch>path,
 			builtPath: string[] = [];
 		while(route.parent) route = route.parent;	//Take root route
@@ -161,7 +160,7 @@ $:	if(setError) setError(displayedError);
 		while(route = route.nested);
 		return $history.url(builtPath)
 	};
-	function navigate(path: string, props?: Dictionary, push: boolean = true) {
+	function navigate(path: string, props?: Record<string, string>, push: boolean = true) {
 		let route = match(path, props);
 		if(route) {
 			let toward = link(route);
@@ -171,7 +170,7 @@ $:	if(setError) setError(displayedError);
 			}
 		}
 	};
-	function replace(path: string, props?: Dictionary) {
+	function replace(path: string, props?: Record<string, string>) {
 		navigate(path, props, false);
 	};
 	function go(delta: number) {

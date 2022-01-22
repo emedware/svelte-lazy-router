@@ -1,7 +1,6 @@
 import { SvelteComponentTyped } from 'svelte';
 
-//import type { RouteSpec } from "router";
-//import type { Constructor, Lazy } from "utils";
+//import type { Lazy, RouteSpec } from "router";
 
 declare function lazy<T>(obj: Lazy<T>, ctor?: Constructor<T>): Promise<T>;
 

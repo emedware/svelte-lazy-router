@@ -83,7 +83,7 @@ A route can be forced (and hence the router state ignored) if this is specified 
 
 - `route`: `RouteMatch`
 : Either the path (begins with a '/') or the name of the route to point to
-- `params`: `Dictionary<any>`
+- `params`: `Record<string, string>`
 : If a route name is provided, this is the dictionary of the properties to give.
 
 State feedbacks :
@@ -107,7 +107,7 @@ State feedbacks :
 
 ### Route determination
 
-When a `(route: string, params: Dictionary)` is used, like the attributes of the `<Link>` element or the parameters to the `match` function, either the route begins with a '/' - in which case the `params` part is ignored and the route string is analyzed as a path, either it does not begin with a '/' and is therefore used as a route name.
+When a `(route: string, params: Record<string, string>)` is used, like the attributes of the `<Link>` element or the parameters to the `match` function, either the route begins with a '/' - in which case the `params` part is ignored and the route string is analyzed as a path, either it does not begin with a '/' and is therefore used as a route name.
 
 If two routes have the name "details", one under the route "author" and one under the route "book", the name "details" will raise an ambiguity error. The names `"author/details"` and `"book/details"` (where both "author", "book" and "details were given as route names) are valid and non-ambiguous.
 
@@ -129,10 +129,10 @@ When in a router, the context `"router"` is the following interface :
 
 ```ts
 interface Routing {
-    link(path: string | RouteMatch, props?: Dictionary): string;
-    match(path: string, props?: Dictionary): RouteMatch;
-    navigate(path: string, props?: Dictionary, push: boolean = true);
-    replace(path: string, props?: Dictionary);
+    link(path: string | RouteMatch, props?: Record<string, string>): string;
+    match(path: string, props?: Record<string, string>): RouteMatch;
+    navigate(path: string, props?: Record<string, string>, push: boolean = true);
+    replace(path: string, props?: Record<string, string>);
     go(delta: number);
 }
 ```
@@ -154,7 +154,7 @@ interface Route {
     component?: Lazy<SvelteComponent>;
     nested?: Route[];
     async enter?(route: RouteMatch): Promise<boolean | void>;
-    async properties?(props: Dictionary, route: RouteMatch): Promise<boolean | void>;
+    async properties?(props: Record<string, string>, route: RouteMatch): Promise<boolean | void>;
     leave?(route: RouteMatch): string | void;
     meta?: any;
 }
@@ -179,7 +179,7 @@ interface RouteMatch {
   spec: RouteSpec;
   parent?: RouteMatch;
   nested?: RouteMatch;
-  props: Dictionary<any>;
+  props: Record<string, string>;
 }
 ```
 
