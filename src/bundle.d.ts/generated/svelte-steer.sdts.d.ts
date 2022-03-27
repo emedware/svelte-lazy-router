@@ -128,11 +128,11 @@ declare module 'svelte-steer\@types/router.ts' {
 	/**
 	 * Routes as specified by the user
 	 */
-	export interface Route {
+	export interface RouteDesc {
 	    name?: string;
 	    path: string;
 	    component?: Lazy<SvelteComponent>;
-	    nested?: Route[];
+	    nested?: RouteDesc[];
 	    enter?(route: RouteMatch): boolean | void;
 	    properties?(props: Dictionary, route: RouteMatch): boolean | void;
 	    leave?(route: RouteMatch): string | void;
@@ -145,7 +145,7 @@ declare module 'svelte-steer\@types/router.ts' {
 	/**
 	 * Analysed routes specs
 	 */
-	export interface RouteSpec extends Route {
+	export interface RouteSpec extends RouteDesc {
 	    segments: Segment[];
 	    nested?: RouteSpec[];
 	    parent?: RouteSpec;
@@ -216,11 +216,11 @@ declare module 'svelte-steer\@types/router.ts' {
 	/**
 	 * Routes as specified by the user
 	 */
-	export interface Route {
+	export interface RouteDesc {
 	    name?: string;
 	    path: string;
 	    component?: Lazy<SvelteComponent>;
-	    nested?: Route[];
+	    nested?: RouteDesc[];
 	    enter?(route: RouteMatch): boolean | void;
 	    properties?(props: Dictionary, route: RouteMatch): boolean | void;
 	    leave?(route: RouteMatch): string | void;
@@ -233,7 +233,7 @@ declare module 'svelte-steer\@types/router.ts' {
 	/**
 	 * Analysed routes specs
 	 */
-	export interface RouteSpec extends Route {
+	export interface RouteSpec extends RouteDesc {
 	    segments: Segment[];
 	    nested?: RouteSpec[];
 	    parent?: RouteSpec;
@@ -281,11 +281,11 @@ declare module 'svelte-steer\@types/router.ts' {
 	/**
 	 * Routes as specified by the user
 	 */
-	export interface Route {
+	export interface RouteDesc {
 	    name?: string;
 	    path: string;
 	    component?: Lazy<SvelteComponent>;
-	    nested?: Route[];
+	    nested?: RouteDesc[];
 	    enter?(route: RouteMatch): boolean | void;
 	    properties?(props: Dictionary, route: RouteMatch): boolean | void;
 	    leave?(route: RouteMatch): string | void;
@@ -298,7 +298,7 @@ declare module 'svelte-steer\@types/router.ts' {
 	/**
 	 * Analysed routes specs
 	 */
-	export interface RouteSpec extends Route {
+	export interface RouteSpec extends RouteDesc {
 	    segments: Segment[];
 	    nested?: RouteSpec[];
 	    parent?: RouteSpec;

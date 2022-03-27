@@ -9,6 +9,7 @@
 	//import type { LeavePrompter, RouteMatch, RouteSpec, Routing } from "router";
 	import { getContext, setContext, SvelteComponent } from "svelte";
 	import { readable, Readable, writable, Writable } from "svelte/store";
+import { isAssertClause } from "typescript";
 	import { NavigationCancelledError, NavigationType } from "./errors";
 	import { excludeProps, lazy } from "./utils";
 	export let route: string = null;
@@ -28,7 +29,13 @@ $:	forwardProps = excludeProps($$props, 'route', 'params');
 	// "route" context is not initialized before call to `LoadRoute`
 	loading.set(true);
 	setContext('route', readable(null, (set)=> { setRoute = set; }));
-$:	LoadRoute(route ? router.match(route, params) : $routerRoute && $routerRoute.nested);
+$:	LoadRoute(
+		route ? router.match(route, params) :
+		(($routerRoute && $routerRoute.nested) || {
+			parent: $routerRoute,
+			spec: null,
+			props: {}
+		}));
 $:	if(setRoute) setRoute(loadedMatch);
 $:	if(error) error.set($routerError);
 	function propDiff(newp: Record<string, string>, oldp: Record<string, string>) {
@@ -62,57 +69,52 @@ $:	if(error) error.set($routerError);
 	// TODO http://localhost:8000/#lz1/52/b -> http://localhost:8000/#lz1/62/b : props+enter (no leave) : should be no "enter"
 	async function LoadRoute(match: RouteMatch) {
 		loading.set(true);
+		console.assert(match, '`route` must be defined')
 		try {
-			if(!match) {
-				component = null;
-				await leave(null);
-				loadedMatch = null;
-			} else {
-				let newProps = {},
-					matchBrowser: RouteMatch = match,
-					matches: RouteMatch[] = [];
-				do {
-					matches.push(matchBrowser);
-					for(let pn of Object.getOwnPropertyNames(match.props))
-						newProps[pn] = match.props[pn]
-					matchBrowser = matchBrowser.parent;
-				} while(matchBrowser && !matchBrowser.spec.component)
-				
-				const matchChange = !loadedMatch || loadedMatch.spec !== match.spec,
-					alreadyTried = triedSpec === match.spec;
-				if(matchChange) {
-					if(!(await leave(match))) return;
-					if(!alreadyTried) {
-						triedSpec = match.spec;
-						let alreadyIn = new Set<RouteSpec>(),
-							loadedAnalysis = loadedMatch;
-						if(loadedMatch) do {
-							alreadyIn.add(loadedAnalysis.spec);
-							loadedAnalysis = loadedAnalysis.parent;
-						} while(loadedAnalysis && !loadedAnalysis.spec.component);
-						while((matchBrowser = matches.pop()))
-							if(!alreadyIn.has(matchBrowser.spec) && matchBrowser.spec.enter && matchBrowser.spec.enter(matchBrowser) === false)
-								throw new NavigationCancelledError(matchBrowser, NavigationType.Enter);
-					}
-					triedProps = props = {};
-				}
-				if(alreadyTried && !propDiff(newProps, triedProps)) return;
-				if(propDiff(newProps, props)) {
-					triedProps = newProps;
-					let propChg = Object.create(props);
-					for(let pn in newProps) if(newProps[pn]!== props[pn]) propChg[pn] = newProps[pn];
-					if(match.spec.properties && match.spec.properties(propChg, match) === false)
-						throw new NavigationCancelledError(match, NavigationType.Properties);
-					props = newProps;
-				}
+			let newProps = {},
+			matchBrowser: RouteMatch = match,
+			matches: RouteMatch[] = [];
+			do {
+				matches.push(matchBrowser);
+				for(let pn of Object.getOwnPropertyNames(match.props))
+					newProps[pn] = match.props[pn]
+				matchBrowser = matchBrowser.parent;
+			} while(matchBrowser && !matchBrowser.spec.component)
 
-				triedProps = null;
-				triedSpec = null;
-				// Browse all the component-less parents to gather the props
-				loadedMatch = match;
-				if(matchChange)
-					component = await lazy<SvelteComponent>(match.spec.component, SvelteComponent);
+			const matchChange = !loadedMatch || loadedMatch.spec !== match.spec,
+				alreadyTried = triedSpec === match.spec;
+			if(matchChange) {
+				if(!(await leave(match))) return;
+				if(!alreadyTried) {
+					triedSpec = match.spec;
+					let alreadyIn = new Set<RouteSpec>(),
+						loadedAnalysis = loadedMatch;
+					if(loadedMatch) do {
+						alreadyIn.add(loadedAnalysis?.spec);
+						loadedAnalysis = loadedAnalysis.parent;
+					} while(loadedAnalysis && !loadedAnalysis.spec.component);
+					while((matchBrowser = matches.pop()))
+						if(!alreadyIn.has(matchBrowser.spec) && matchBrowser.spec?.enter && matchBrowser.spec.enter(matchBrowser) === false)
+							throw new NavigationCancelledError(matchBrowser, NavigationType.Enter);
+				}
+				triedProps = props = {};
 			}
+			if(alreadyTried && !propDiff(newProps, triedProps)) return;
+			if(propDiff(newProps, props)) {
+				triedProps = newProps;
+				let propChg = Object.create(props);
+				for(let pn in newProps) if(newProps[pn]!== props[pn]) propChg[pn] = newProps[pn];
+				if(match.spec.properties && match.spec.properties(propChg, match) === false)
+					throw new NavigationCancelledError(match, NavigationType.Properties);
+				props = newProps;
+			}
+
+			triedProps = null;
+			triedSpec = undefined;	// null => no sub; undefined => not tried
+			// Browse all the component-less parents to gather the props
+			loadedMatch = match.spec && match;
+			if(matchChange)
+				component = match.spec && await lazy<SvelteComponent>(match.spec.component, SvelteComponent);
 		}
 		finally { loading.set(false); }
 	};

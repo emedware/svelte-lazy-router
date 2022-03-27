@@ -6,15 +6,15 @@ import { Readable } from "svelte/store";
 
 	type Constructor<T> = { new (...args: any[]): T };
 //export * from "../@types/router";
-	export type Lazy<T> = any; //typeof T | (()=> Lazy<T>) | Promise<Lazy<T>>; TODO: makes an error in produced .d.ts
+	export type Lazy<T> = typeof T | (()=> Lazy<T>) | Promise<Lazy<T>>; // TODO: makes an error in produced .d.ts
 	/**
 	 * Routes as specified by the user
 	 */
-	export interface Route {
+	export interface RouteDesc {
 		name?: string;
 		path: string;
 		component?: Lazy<SvelteComponent>;
-		nested?: Route[];
+		nested?: RouteDesc[];
 		enter?(route: RouteMatch): boolean | void;
 		properties?(props: Record<string, string>, route: RouteMatch): boolean | void;
 		leave?(route: RouteMatch): string | void;
@@ -29,7 +29,7 @@ import { Readable } from "svelte/store";
 	/**
 	 * Analysed routes specs
 	 */
-	export interface RouteSpec extends Route {
+	export interface RouteSpec extends RouteDesc {
 		segments: Segment[];
 		nested?: RouteSpec[];
 		parent?: RouteSpec;
@@ -49,6 +49,8 @@ import { Readable } from "svelte/store";
 		navigate(path: string, props?: Record<string, string>, push?: boolean);
 		replace(path: string, props?: Record<string, string>);
 		go(delta: number);
+		locale: string;
+		nameLocale: string;
 	}
 
 	export interface RouteHistory {
@@ -123,7 +125,7 @@ export { AmbiguousNameError, NavigationCancelledError, NavigationType, RouteNotF
 
 	export interface routerProps {
 		variableMarker: RegExp,
-		routes: Route[],
+		routes: RouteDesc[],
 		history: Readable<RouteHistory>,
 		leavePrompter: LeavePrompter
 	}

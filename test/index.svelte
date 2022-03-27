@@ -1,9 +1,9 @@
 <Router routes={Routes}>
 	<Game />
 </Router>
-<Router routes={Routes} history={HashHistory}>
+<!--Router routes={Routes} history={HashHistory}>
 	<Game />
-</Router>
+</Router-->
 <script lang="ts">
 	import { Router, HashHistory } from "svelte-steer";
 	import Routes from "./routes";

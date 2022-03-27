@@ -7,7 +7,7 @@
 	import { AmbiguousNameError, RouteNotFoundError } from "./errors";
 	import updateLocation, { H5History } from "./history";
 	export var variableMarker: RegExp = /^\:/;
-	export var routes: Route[];
+	export var routes: RouteDesc[];
 	export var history: Readable<RouteHistory> = H5History;
 	export var leavePrompter: LeavePrompter = null;
 	
@@ -18,7 +18,7 @@
 	if(!leavePrompter) setContext('leave-prompter', leavePrompter = async (prompt: string)=> confirm(prompt));
 
 	const rootSpec: RouteSpec = {path: '', segments: []};
-	let analyzedRoutes: Route[],
+	let analyzedRoutes: RouteDesc[],
 		namedRoutes: Record<string, RouteSpec>,
 		specs: RouteSpec[];
 	setContext('router', {
@@ -29,7 +29,7 @@
 	let setRoute: (route: RouteMatch)=> void, setError: (error: any)=> void, setRouteSub: (routeSub: string)=> void,
 		routeSub: string = null,
 		displayedRoute: RouteMatch, displayedError: Error, displayedHistory: string;
-	function analyze(routes: Route[]) {
+	function analyze(routes: RouteDesc[]) {
 		if(routes !== analyzedRoutes) {
 			rootSpec.nested = specs = analyzeRoutes(routes);
 			analyzedRoutes = routes;
@@ -61,7 +61,7 @@ $:	if(setError) setError(displayedError);
 	function setName<T>(dst: Record<string, T>, name: string, value: T, ambiguous: T) {
 		dst[name] = dst.hasOwnProperty(name) ? ambiguous : value;
 	}
-	function analyzeRoutes(routes: Route[], parent?: RouteSpec): RouteSpec[] {
+	function analyzeRoutes(routes: RouteDesc[], parent?: RouteSpec): RouteSpec[] {
 		if(!parent) namedRoutes = {};
 		return routes.map(route => {
 			let rv: RouteSpec = Object.assign(Object.create(route), {

@@ -148,11 +148,11 @@ router.navigate('/new/url');
 #### Route definition
 
 ```ts
-interface Route {
+interface RouteDesc {
     name?: string;
     path: string;
     component?: Lazy<SvelteComponent>;
-    nested?: Route[];
+    nested?: RouteDesc[];
     async enter?(route: RouteMatch): Promise<boolean | void>;
     async properties?(props: Record<string, string>, route: RouteMatch): Promise<boolean | void>;
     leave?(route: RouteMatch): string | void;

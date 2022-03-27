@@ -11,7 +11,7 @@
 	<Link route="/lz1/62/b">r1b</Link>
 </nav>
 <div>
-	You are here --&gt; <Route>404</Route> &lt;--
+	You are here --&gt; <Route class="top-route">404</Route> &lt;--
 </div>
 <script lang="ts">
 	import { Link, Route } from "svelte-steer";
