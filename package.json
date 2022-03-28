@@ -1,6 +1,6 @@
 {
   "name": "svelte-steer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Router with lazy-loading and nested routes for svelte",
   "main": "dst/svelte-steer",
   "module": "dst/svelte-steer.mjs",

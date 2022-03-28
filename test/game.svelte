@@ -7,11 +7,12 @@
 	<Link route="/3/b">r3b</Link>
 	<Link route="prmd" params={{id: 42}}>p42</Link>
 	<Link route="lzOne" params={{id: 42}}>lz1</Link>
-	<Link route="lzOne/alpha" params={{id: 52}}>r1a</Link>
-	<Link route="/lz1/62/b">r1b</Link>
+	<Link route="lzOne/alpha" params={{id: 52}}>r1a-52</Link>
+	<Link route="/lz1/62/a">r1a-62</Link>
+	<Link route="/lz1/62/b">r1b-62</Link>
 </nav>
 <div>
-	You are here --&gt; <Route class="top-route">404</Route> &lt;--
+	You are here --&gt; <Route>404</Route> &lt;--
 </div>
 <script lang="ts">
 	import { Link, Route } from "svelte-steer";

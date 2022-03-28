@@ -66,7 +66,6 @@ $:	if(error) error.set($routerError);
 		leaving = null;
 		return leavingId === callId;
 	}
-	// TODO http://localhost:8000/#lz1/52/b -> http://localhost:8000/#lz1/62/b : props+enter (no leave) : should be no "enter"
 	async function LoadRoute(match: RouteMatch) {
 		loading.set(true);
 		console.assert(match, '`route` must be defined')
